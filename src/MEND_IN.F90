@@ -40,6 +40,7 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
     integer i, j, k, lp, ierror, iwarn
     integer eof !!end of file
     INTEGER is_total  !!=1: need to convert to hourly rate; =0: directly assign value
+    character(len=4):: treatment
 
     data deflt/' DEFAULT  '/
     data usrsp/'USER SPEC.'/
@@ -77,7 +78,7 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
     integer             :: iModel
     integer             :: iSA_range(2)
     CHARACTER(len=3)    :: ssMEND
-    CHARACTER(len=20)   :: Dir_Input, Dir_Output
+    CHARACTER(len=50)   :: Dir_Input, Dir_Output
     character(len=8)    :: ssDate_beg_all, ssDate_end_all, ssDate_beg_sim, ssDate_end_sim
 
     character(len=20)   :: sfilename_ST(20), sfilename_SM(20), sfilename_type1(20), sfilename_pH(20)
@@ -515,9 +516,9 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       end if
       ! 
       ! -------------------------------------------------------
-      call can_photosyn(gpp_m) ! modeled GPP (instead of direct input) added by zheng 
+      treatment = 'aCaN'
+      call can_photosyn(gpp_m,treatment) ! modeled GPP (instead of direct input) added by zheng 
       sINI%SIN(1:size(gpp_m)) = gpp_m 
-      
       !!soil pH
       if(ifdata_pH.eq.1) then  !!nfile = 1 if ststep='monthly'
           sUnits = StrCompress(sUnits_pH)

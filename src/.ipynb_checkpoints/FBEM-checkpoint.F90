@@ -5,6 +5,7 @@ module photosyn
         private
         
         public  :: can_photosyn
+        public  :: NLimitationGPP
         private :: Arrhenius
         
 contains
@@ -47,7 +48,7 @@ contains
 
         !write outputs header
         open(15,file='./src/photosyn/cflux.out',status='unknown')
-        write(15,'(2A3,A4)')"An,","Ac,","gppx"
+        write(15,'(2A3,A4)')"An,","Ac,","gpp"
         
         nday=365*9
         allocate(gpp(24*nday))
@@ -120,5 +121,13 @@ contains
            real(8):: Arrhenius
            Arrhenius=exp((Ea/(Rgas*Tk)*(Tk/298.15-1.)))
     end function Arrhenius
+    
+    function NLimitationGPP(mineralN) result(ans)
+        real(8), intent(in):: mineralN
+        real(8) :: ans
+        
+        ans = exp(mineralN)/(1+exp(mineralN))
+    
+    end function NLimitationGPP
 
 end module photosyn

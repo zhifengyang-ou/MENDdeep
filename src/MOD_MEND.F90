@@ -465,7 +465,10 @@ REAL(8) function fMEND_OBJ(xx, sPAR, sINI, sOUT)
     sINI%r0         = xx(2) !fraction of active biomass
 !    print*,"ok:",sINI%VARopt_int
     CALL subMEND_INI(sINI) !initialization: initial pool sizes
+    open(255,file=trim(sINI%dirout)//'NFixation.out')
+    write(255,*) "symbiotic,","freeliving"
     CALL subMEND_RUN(xx, sPAR, sINI, sOUT)
+    close(255)
 
     do i = 1, sINI%nVARopt 
         j = sINI%VARopt_int(i,1)
@@ -777,7 +780,7 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
 !        read(sINI%iFout_ITW_hour,*)sRead
 !    end do
 !!wgs: END
-    
+
     do iday = 1,nday
         CALL sDate_After(iday,sINI%sDate_beg_sim,sDate)
         if(sINI % iModel.eq.0) then
@@ -1124,6 +1127,7 @@ SUBROUTINE subMEND(xx, sPAR, sINI, sOUT)
     REAL(8) frPOM(const_nPOM), frENZP(const_nPOM), ENZP_loss(const_nPOM) !!POMdec(const_nPOM),
     REAL(8) frMBA_to_POM(const_nPOM), frENZNm(const_nENZNm)
     REAL(8) rtp1, rtp2, rtp3, rtp4
+    real(8) NH4ForNfix_freeliving, NFix_symbiotic
     
 !    ASSOCIATE(sINP => sINI%sINP) 
     frMBA_to_POM = (/0.1d0, 0.9d0/)  !! 10% entering POM_Oxidative, 90% entering POM_Hydrolytic
@@ -1579,9 +1583,18 @@ IF(.NOT.sINI%Carbon_only) THEN
     sOUT % MNPOOL % NO3 = sINP%MNPOOL%NO3 + sOUT%MNFLUX%NO3_dep - sOUT%MNFLUX%Nim_NO3 - sOUT%MNFLUX%Nim_NO3_VG
     
     !!N-Fixation, NITRIFICATION & DENITRIFICATION
-        
     sOUT%MNFLUX%NFix = sPAR%VNif * sINP%CPOOL%ENZNm(1) * sINP%MNPOOL%N2/(sPAR%KsNif +  sINP%MNPOOL%N2) &
-                            *(1.d0 - sINP%MNPOOL%NH4/(sPAR%KsNit +  sINP%MNPOOL%NH4))  !! 7/10/2020: Correction: should use sPAR%KsNit instead of sPAR%KsNif
+                            *(1.d0 - sINP%MNPOOL%NH4/(sPAR%KsNit +  sINP%MNPOOL%NH4)) !N fixation by symbiotic N fixer !! 7/10/2020: Correction: should use sPAR%KsNit instead of sPAR%KsNif
+    
+    ! separte symbiotic and free living N fixers: begin
+    NFix_symbiotic = sOUT%MNFLUX%NFix
+    NH4ForNfix_freeliving = sINP%MNPOOL%NH4+NFix_symbiotic
+    sOUT%MNFLUX%NFix = sPAR%VNif * sINP%CPOOL%ENZNm(1) * sINP%MNPOOL%N2/(sPAR%KsNif +  sINP%MNPOOL%N2) &
+                            *(1.d0 - NH4ForNfix_freeliving/(sPAR%KsNit +  NH4ForNfix_freeliving))  ! free living N fixers
+    write(255,*) NFix_symbiotic, sOUT%MNFLUX%NFix  
+    sOUT%MNFLUX%NFix = NFix_symbiotic+sOUT%MNFLUX%NFix
+    ! separte symbiotic and free living N fixers: end
+
     sOUT%MNFLUX%Nitrif      = sPAR%VNit * sINP%CPOOL%ENZNm(2) * sOUT%MNPOOL%NH4/(sPAR%KsNit + sOUT%MNPOOL%NH4)
     
     sOUT%MNFLUX%Denit(1)      = sPAR%VDenit(1) * sINP%CPOOL%ENZNm(3) * sOUT%MNPOOL%NO3/(sPAR%KsDenit(1) + sOUT%MNPOOL%NO3)
@@ -3352,14 +3365,14 @@ SUBROUTINE sOUT_OPT_h(nVAR,nHour,iHour,dSIM,sPAR,sOUT,VARopt_int)
                 dSIM(iHour,j) = sOUT%MNFLUX%CO2_gmo
             case (6)    !!SOM, !!2/7/2019: actually using TOM=POM+MOM+DOM+MB+ENZ
                 dSIM(iHour,j) = sOUT%CPOOL%TOM
-!            case (7)    !!SOM_ISO
-!                dSIM(iHour,j) = sOUT%CPOOLI(2)%SOM
-            case (8)    !!ENZ_MOM, ENZ Activity = ENZ concentration*specific enzyme activity
-                dSIM(iHour,j) = sOUT%CPOOL%ENZM*sPAR%VdMOM
-            case (9)    !!ENZ_LIG, ENZ Activity = ENZ concentration*specific enzyme activity
-                dSIM(iHour,j) = sOUT%CPOOL%ENZP(1)*sPAR%VdPOM(1)
-            case (10)   !!ENZ_CEL, ENZ Activity
-                dSIM(iHour,j) = sOUT%CPOOL%ENZP(2)*sPAR%VdPOM(2)
+            case (7)    !!MQ
+                dSIM(iHour,j) = sOUT%MNFLUX%CO2_gmo/sOUT%CPOOL%MB
+            case (8)    !!POC
+                dSIM(iHour,j) = sOUT%CPOOL%POMT
+            case (9)    !!MOC
+                dSIM(iHour,j) = sOUT%CPOOL%MOMT
+            case (10)   !!MQ
+                dSIM(iHour,j) = sOUT%MNFLUX%CO2_gmo/sOUT%CPOOL%MB
             case (11)    !!SOM_CN, !!2/7/2019: actually using TOM=POM+MOM+DOM+MB+ENZ
                 dSIM(iHour,j) = sOUT%CN%TOM
             case (12)    !!MB_CN
@@ -3373,13 +3386,13 @@ SUBROUTINE sOUT_OPT_h(nVAR,nHour,iHour,dSIM,sPAR,sOUT,VARopt_int)
             case (16)    !!Nmine = NH4 + NO3
                 dSIM(iHour,j) = sOUT%MNPOOL%NO32
             case (17)    !!ENZC_LIG, ENZ concentration
-                dSIM(iHour,j) = sOUT%CPOOL%ENZP(1)
+                dSIM(iHour,j) = sOUT%CPOOL%ENZP(1) !/sOUT%CPOOL%MB
             case (18)   !!ENZC_CEL, 
-                dSIM(iHour,j) = sOUT%CPOOL%ENZP(2)
-            case (19)   !!ENZC_MOM, 
-                dSIM(iHour,j) = sOUT%CPOOL%ENZM
-            case (20)   !!ENZ-Carbon for all mineral-N enzymes 
-                dSIM(iHour,j) = sOUT%CPOOL%ENZNmt
+                dSIM(iHour,j) = sOUT%CPOOL%ENZP(2)!/sOUT%CPOOL%MB
+            case (19)   !!ENZC_LIG, 
+                dSIM(iHour,j) = sOUT%CPOOL%ENZP(1)!/sOUT%CPOOL%MB
+            case (20)   !!ENZC_CEL 
+                dSIM(iHour,j) = sOUT%CPOOL%ENZP(2)!/sOUT%CPOOL%MB
             case (21)   !!all mineral N excluding N-gases
                 dSIM(iHour,j) = sOUT%MNPOOL%Nmine_Solid
             case (22)   !!gross N mineralization
