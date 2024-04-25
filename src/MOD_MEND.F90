@@ -88,7 +88,7 @@ SUBROUTINE subMEND_INI(sINI)
     TYPE(sMEND_INI), intent(inout) :: sINI
     
     !!LOCAL VARIABLES:
-    TYPE(sMEND_INP):: sINP
+    TYPE(sMEND_INP),DIMENSION(:), ALLOCATABLE :: sINP  ! set another dimension as depth
     INTEGER nObs_time, nObs_var, nObs_col != nSoil*nSubstrate*nObs_var  !# of columns in observation data file
 
     INTEGER i, j, k, lp
@@ -100,7 +100,7 @@ SUBROUTINE subMEND_INI(sINI)
     INTEGER iRead  !!iTemp
     REAL(8) rRead  !!rTemp
     
-    
+    ALLOCATE(sINP(const_layerNum))  !! allocate number of layer
     ifobs = 2
 !
 !    !!READ observations for model calibration
@@ -137,101 +137,101 @@ SUBROUTINE subMEND_INI(sINI)
     sINI % CN_ENZP      = (/sINI%dINI(7), sINI%dINI(8)/)
     sINI % CN_ENZM      = sINI%dINI(9)
     !!fQOM = sINI%dINI(10)
-    
-    !carbon pools
-    sINP % CPOOL % POM = sINI%dINI(12) * (/sINI%LCI0, 1.d0 - sINI%LCI0/) ![mg C/g soil],Particulate Organic Carbon, size of {} determined by nPOM, !(/DBLE(0.958), DBLE(2.290)/)  !reshape((/DBLE(0.958), DBLE(2.290)/),shape(sINP%CPOOL%POM))
-    sINP % CPOOL % MOM = sINI%dINI(13)*(1.d0 - sINI%dINI(10)) ![mg C/g soil],Mineral Associate Organic Carbon  !DBLE(27.868) 
-    sINP % CPOOL % QOM = sINI%dINI(13) * sINI%dINI(10) ![mg C/g soil],adsorbed phase of DOM  !DBLE(0.100)
-    sINP % CPOOL % DOMT = sINI%dINI(14) ![mg C/g soil],Dissolved Organic Carbon     !DBLE(0.210) 
-    if(sINI%iKinetics.eq.10) then 
-        sINP % CPOOL % DOM = 0.25d0*sINP % CPOOL % DOMT ![mg C/g soil],Dissolved Organic Carbon     !DBLE(0.210) 
-    else
-        sINP % CPOOL % DOM = sINP % CPOOL % DOMT
-    end if
-    sINP % CPOOL % DOMS = sINP % CPOOL % DOMT - sINP % CPOOL % DOM ![mg C/g soil],Dissolved Organic Carbon     !DBLE(0.210)
-    sINP % CPOOL % MB  = sINI%dINI(15) ![mg C/g soil],Microbial Biomass Carbon  !DBLE(0.640)    
-    sINP % CPOOL % MBA = sINP % CPOOL % MB * sINI % r0 ![mg C/g soil],Active Microbial Biomass Carbon  !DBLE(0.640) 
-    sINP % CPOOL % MBD = sINP % CPOOL % MB * (1.d0 - sINI % r0) ![mg C/g soil],Active Microbial Biomass Carbon  !DBLE(0.640) 
-    sINP % CPOOL % ENZP= (/sINI%dINI(16),sINI%dINI(17)/)!!(/1.1d-3, 1.1d-3/) ![mg C/g soil],ENZyme for POM        !reshape((/DBLE(1.1d-3),DBLE(1.1d-3)/),shape(sINP%CPOOL%ENZP))   
-    sINP % CPOOL % ENZM= sINI%dINI(18) !!1.4d-3 ![mg C/g soil],Enzyme for MAOC  
-    sINP % CPOOL % ENZNm = 0.d0
-    sINP % MNPOOL % CO2 = 0.d0 ![mg C/g soil],CO2 in the soil
-    CALL subMEND_CPOOL_UPDATE1(sINP % CPOOL)
-    
-    IF(.not.sINI%Carbon_only) THEN
-        !!CN_SOM = sINI%dINI(19)
-        !!CN_POM = sINI%dINI(20)
-        !!CN_MOM = sINI%dINI(21)
-        CN_DOM = sINI%dINI(22)
-        !!CN_MB = sINI%dINI(23)
-        !!COMPUTE CN_POM1
-        frac = (/sINP % CPOOL % POM(1)/(sINI%dINI(13)+sINI%dINI(12)),&
-                sINP % CPOOL % POM(2)/(sINI%dINI(13)+sINI%dINI(12)), &
-                sINI%dINI(13)/(sINI%dINI(13)+sINI%dINI(12))/)
-        rRead = frac(1)/(1.D0/sINI%dINI(19) - frac(3)/sINI%dINI(21) - frac(2)/const_CN_Cellulose)
-        
-        sINP % NPOOL % POM(1)= sINP % CPOOL % POM(1)/rRead !!sINI%dINI(20)  !!lignin
-        sINP % NPOOL % POM(2)= sINP % CPOOL % POM(2)/const_CN_Cellulose  !!cellulose
-        sINP % NPOOL % MOM   = sINP % CPOOL % MOM/sINI%dINI(21)
-        sINP % NPOOL % QOM   = sINP % CPOOL % QOM/sINI%dINI(21)
-        sINP % NPOOL % DOM   = sINP % CPOOL % DOM/sINI%dINI(22)
-        sINP % NPOOL % DOMS   = sINP % CPOOL % DOMS/sINI%dINI(22)
-        sINP % NPOOL % DOMT   = sINP % CPOOL % DOMT/sINI%dINI(22)
-        sINP % NPOOL % MBA   = sINP % CPOOL % MBA/sINI%dINI(23)
-        sINP % NPOOL % MBD   = sINP % CPOOL % MBD/sINI%dINI(23)
-        sINP % NPOOL % ENZP  = sINP % CPOOL % ENZP/sINI % CN_ENZP
-        sINP % NPOOL % ENZM  = sINP % CPOOL % ENZM/sINI % CN_ENZM
+    do i=1,const_layerNum !! assign value for each layer-zhifeng 20240419
+		!carbon pools
+		sINP(i) % CPOOL % POM = sINI%dINI(12) * (/sINI%LCI0, 1.d0 - sINI%LCI0/)*const_SOMratio(i) ![mg C/g soil],Particulate Organic Carbon, size of {} determined by nPOM, !(/DBLE(0.958), DBLE(2.290)/)  !reshape((/DBLE(0.958), DBLE(2.290)/),shape(sINP%CPOOL%POM))
+		sINP(i) % CPOOL % MOM = sINI%dINI(13)*(1.d0 - sINI%dINI(10))*const_SOMratio(i) ![mg C/g soil],Mineral Associate Organic Carbon  !DBLE(27.868) 
+		sINP(i) % CPOOL % QOM = sINI%dINI(13) * sINI%dINI(10)*const_SOMratio(i) ![mg C/g soil],adsorbed phase of DOM  !DBLE(0.100)
+		sINP(i) % CPOOL % DOMT = sINI%dINI(14)*const_SOMratio(i) ![mg C/g soil],Dissolved Organic Carbon     !DBLE(0.210) 
+		if(sINI%iKinetics.eq.10) then 
+			sINP(i) % CPOOL % DOM = 0.25d0*sINP(i) % CPOOL % DOMT ![mg C/g soil],Dissolved Organic Carbon     !DBLE(0.210) 
+		else
+			sINP(i) % CPOOL % DOM = sINP(i) % CPOOL % DOMT
+		end if
+		sINP(i) % CPOOL % DOMS = sINP(i) % CPOOL % DOMT - sINP(i) % CPOOL % DOM ![mg C/g soil],Dissolved Organic Carbon     !DBLE(0.210)
+		sINP(i) % CPOOL % MB  = sINI%dINI(15)*const_SOMratio(i) ![mg C/g soil],Microbial Biomass Carbon  !DBLE(0.640)    
+		sINP(i) % CPOOL % MBA = sINP(i) % CPOOL % MB * sINI % r0 ![mg C/g soil],Active Microbial Biomass Carbon  !DBLE(0.640) 
+		sINP(i) % CPOOL % MBD = sINP(i) % CPOOL % MB * (1.d0 - sINI % r0) ![mg C/g soil],Active Microbial Biomass Carbon  !DBLE(0.640) 
+		sINP(i) % CPOOL % ENZP= (/sINI%dINI(16),sINI%dINI(17)/)!!(/1.1d-3, 1.1d-3/) ![mg C/g soil],ENZyme for POM        !reshape((/DBLE(1.1d-3),DBLE(1.1d-3)/),shape(sINP(i)%CPOOL%ENZP))   
+		sINP(i) % CPOOL % ENZM= sINI%dINI(18) !!1.4d-3 ![mg C/g soil],Enzyme for MAOC  
+		sINP(i) % CPOOL % ENZNm = 0.d0
+		sINP(i) % MNPOOL % CO2 = 0.d0 ![mg C/g soil],CO2 in the soil
+		CALL subMEND_CPOOL_UPDATE1(sINP(i) % CPOOL)
+		
+		IF(.not.sINI%Carbon_only) THEN  !!ignore layer of N part first--zhifeng-20240419
+			!!CN_SOM = sINI%dINI(19)
+			!!CN_POM = sINI%dINI(20)
+			!!CN_MOM = sINI%dINI(21)
+			CN_DOM = sINI%dINI(22)
+			!!CN_MB = sINI%dINI(23)
+			!!COMPUTE CN_POM1
+			frac = (/sINP % CPOOL % POM(1)/(sINI%dINI(13)+sINI%dINI(12)),&
+					sINP % CPOOL % POM(2)/(sINI%dINI(13)+sINI%dINI(12)), &
+					sINI%dINI(13)/(sINI%dINI(13)+sINI%dINI(12))/)
+			rRead = frac(1)/(1.D0/sINI%dINI(19) - frac(3)/sINI%dINI(21) - frac(2)/const_CN_Cellulose)
+			
+			sINP % NPOOL % POM(1)= sINP % CPOOL % POM(1)/rRead !!sINI%dINI(20)  !!lignin
+			sINP % NPOOL % POM(2)= sINP % CPOOL % POM(2)/const_CN_Cellulose  !!cellulose
+			sINP % NPOOL % MOM   = sINP % CPOOL % MOM/sINI%dINI(21)
+			sINP % NPOOL % QOM   = sINP % CPOOL % QOM/sINI%dINI(21)
+			sINP % NPOOL % DOM   = sINP % CPOOL % DOM/sINI%dINI(22)
+			sINP % NPOOL % DOMS   = sINP % CPOOL % DOMS/sINI%dINI(22)
+			sINP % NPOOL % DOMT   = sINP % CPOOL % DOMT/sINI%dINI(22)
+			sINP % NPOOL % MBA   = sINP % CPOOL % MBA/sINI%dINI(23)
+			sINP % NPOOL % MBD   = sINP % CPOOL % MBD/sINI%dINI(23)
+			sINP % NPOOL % ENZP  = sINP % CPOOL % ENZP/sINI % CN_ENZP
+			sINP % NPOOL % ENZM  = sINP % CPOOL % ENZM/sINI % CN_ENZM
 
-        sINP % MNPOOL % NH4     = 0.5d0*sINI%dINI(24)
-        sINP % MNPOOL % NH4ads  = 0.5d0*sINI%dINI(24)
-        sINP % MNPOOL % NO3  = sINI%dINI(25)
-        
-        sINP % MNPOOL % NO2 = 0.1d0*sINP % MNPOOL % NO3
-        sINP % MNPOOL % NO = 0.05d0*sINP % MNPOOL % NO3
-        sINP % MNPOOL % N2O = sINP % MNPOOL % NO
-        sINP % MNPOOL % N2 = 1d-2 !!sINP % MNPOOL % NO
-        
-        rRead = sINP % MNPOOL % NH4 + sINP % MNPOOL % NO3 + sINP % MNPOOL % NO2 &
-              + sINP % MNPOOL % NO + sINP % MNPOOL % N2O + sINP % MNPOOL % N2
-        rRead = rRead/(sum(sINP % NPOOL % POM) + sINP % NPOOL % MOM)
-        sINP % CPOOL % ENZNmt = rRead*(sum(sINP % CPOOL % ENZP) + sINP % CPOOL % ENZM)
-        sINP % CPOOL % ENZNm = sINP % CPOOL % ENZNmt/const_nENZNm  
-        sINP % NPOOL % ENZNm = sINP % CPOOL % ENZNm/sINI % CN_ENZM
-        
-        CALL subMEND_CPOOL_UPDATE1(sINP % CPOOL)  !!2019-04-28
-        CALL subMEND_NPOOL_UPDATE1(sINP % NPOOL, sINP % MNPOOL)
-        CALL subMEND_CN_UPDATE(sINP % CPOOL, sINP % NPOOL, sINP%MNPOOL, sINP % CN)
-        !!COMPUTE CN_LITT(3), CN_WOOD(2), CN_ROOT(3)
-        rCN_LIG2LAB = sINI%dINI(26)
+			sINP % MNPOOL % NH4     = 0.5d0*sINI%dINI(24)
+			sINP % MNPOOL % NH4ads  = 0.5d0*sINI%dINI(24)
+			sINP % MNPOOL % NO3  = sINI%dINI(25)
+			
+			sINP % MNPOOL % NO2 = 0.1d0*sINP % MNPOOL % NO3
+			sINP % MNPOOL % NO = 0.05d0*sINP % MNPOOL % NO3
+			sINP % MNPOOL % N2O = sINP % MNPOOL % NO
+			sINP % MNPOOL % N2 = 1d-2 !!sINP % MNPOOL % NO
+			
+			rRead = sINP % MNPOOL % NH4 + sINP % MNPOOL % NO3 + sINP % MNPOOL % NO2 &
+				  + sINP % MNPOOL % NO + sINP % MNPOOL % N2O + sINP % MNPOOL % N2
+			rRead = rRead/(sum(sINP % NPOOL % POM) + sINP % NPOOL % MOM)
+			sINP % CPOOL % ENZNmt = rRead*(sum(sINP % CPOOL % ENZP) + sINP % CPOOL % ENZM)
+			sINP % CPOOL % ENZNm = sINP % CPOOL % ENZNmt/const_nENZNm  
+			sINP % NPOOL % ENZNm = sINP % CPOOL % ENZNm/sINI % CN_ENZM
+			
+			CALL subMEND_CPOOL_UPDATE1(sINP % CPOOL)  !!2019-04-28
+			CALL subMEND_NPOOL_UPDATE1(sINP % NPOOL, sINP % MNPOOL)
+			CALL subMEND_CN_UPDATE(sINP % CPOOL, sINP % NPOOL, sINP%MNPOOL, sINP % CN)
+			!!COMPUTE CN_LITT(3), CN_WOOD(2), CN_ROOT(3)
+			rCN_LIG2LAB = sINI%dINI(26)
 
-        sINI % CN_LITT(2) = const_CN_Cellulose
-        sINI % CN_WOOD(2) = const_CN_Cellulose
-        sINI % CN_ROOT(2) = const_CN_Cellulose
+			sINI % CN_LITT(2) = const_CN_Cellulose
+			sINI % CN_WOOD(2) = const_CN_Cellulose
+			sINI % CN_ROOT(2) = const_CN_Cellulose
 
-!        sINI % CN_LITT(1) = frac(1)/(1.D0/sINI%CN_LITT_avg - frac(3)/sINI % CN_LITT(3) - frac(2)/sINI % CN_LITT(2))
-        frac = sINI%SIN_frac
-        sINI % CN_LITT(3) = (frac(1)/rCN_LIG2LAB + frac(3))/(1.D0/sINI%CN_LITT_avg - frac(2)/sINI % CN_LITT(2))
-        sINI % CN_LITT(1) = sINI % CN_LITT(3)*rCN_LIG2LAB
+	!        sINI % CN_LITT(1) = frac(1)/(1.D0/sINI%CN_LITT_avg - frac(3)/sINI % CN_LITT(3) - frac(2)/sINI % CN_LITT(2))
+			frac = sINI%SIN_frac
+			sINI % CN_LITT(3) = (frac(1)/rCN_LIG2LAB + frac(3))/(1.D0/sINI%CN_LITT_avg - frac(2)/sINI % CN_LITT(2))
+			sINI % CN_LITT(1) = sINI % CN_LITT(3)*rCN_LIG2LAB
 
-        rRead = sum(sINI%SIN_other(1,:))
-        if(rRead.lt.1.D-20) then
-            frac = 1.D0/3
-        else 
-            frac = sINI%SIN_other(1,:)/rRead
-        end if
-        sINI % CN_WOOD(3) = (frac(1)/rCN_LIG2LAB + frac(3))/(1.D0/sINI%CN_WOOD_avg - frac(2)/sINI % CN_WOOD(2))
-        sINI % CN_WOOD(1) = sINI % CN_WOOD(3)*rCN_LIG2LAB
+			rRead = sum(sINI%SIN_other(1,:))
+			if(rRead.lt.1.D-20) then
+				frac = 1.D0/3
+			else 
+				frac = sINI%SIN_other(1,:)/rRead
+			end if
+			sINI % CN_WOOD(3) = (frac(1)/rCN_LIG2LAB + frac(3))/(1.D0/sINI%CN_WOOD_avg - frac(2)/sINI % CN_WOOD(2))
+			sINI % CN_WOOD(1) = sINI % CN_WOOD(3)*rCN_LIG2LAB
 
-        rRead = sum(sINI%SIN_other(2,:))
-        if(rRead.lt.1.D-20) then
-            frac = 1.D0/3
-        else 
-            frac = sINI%SIN_other(2,:)/rRead
-        end if
-!        frac = sINI%SIN_other(2,:)/sum(sINI%SIN_other(2,:))
-        sINI % CN_ROOT(3) = (frac(1)/rCN_LIG2LAB + frac(3))/(1.D0/sINI%CN_ROOT_avg - frac(2)/sINI % CN_ROOT(2))
-        sINI % CN_ROOT(1) = sINI % CN_ROOT(3)*rCN_LIG2LAB
-        
+			rRead = sum(sINI%SIN_other(2,:))
+			if(rRead.lt.1.D-20) then
+				frac = 1.D0/3
+			else 
+				frac = sINI%SIN_other(2,:)/rRead
+			end if
+	!        frac = sINI%SIN_other(2,:)/sum(sINI%SIN_other(2,:))
+			sINI % CN_ROOT(3) = (frac(1)/rCN_LIG2LAB + frac(3))/(1.D0/sINI%CN_ROOT_avg - frac(2)/sINI % CN_ROOT(2))
+			sINI % CN_ROOT(1) = sINI % CN_ROOT(3)*rCN_LIG2LAB
+    end do    
 !!! moved to MEND_IN.F90, because it will result in SIN_NH4 or SIN_NO3 divided by soilDepth repeatedly during multiple runs (e.g., parameter optimization) 
 !!!----------------------------------------------------------------------------------------------        
 !!!        sINI%SIN_NH4 = sINI%SIN_NH4/sINI%soilDepth  !!convert [mg N/cm2/h] to [mg N/cm3/h]
@@ -445,7 +445,8 @@ REAL(8) function fMEND_OBJ(xx, sPAR, sINI, sOUT)
     !!ARGUMENTS:
     TYPE(sMEND_PAR), intent(inout) :: sPAR
     TYPE(sMEND_INI), intent(inOut) :: sINI
-    TYPE(sMEND_OUT), intent(inOut) :: sOUT
+    TYPE(sMEND_OUT),DIMENSION(:), ALLOCATABLE , intent(inOut) :: sOUT
+	ALLOCATE(sOUT(const_layerNum))
     REAL(8)        , intent(in)    :: xx(sINI%nPar)
     
     !!LCOAL VARIABLES:
@@ -682,12 +683,14 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
     !!ARGUMENTS:
     TYPE(sMEND_PAR), intent(inout) :: sPAR
     TYPE(sMEND_INI), intent(inout) :: sINI
-    TYPE(sMEND_OUT), intent(inout) :: sOUT
+    TYPE(sMEND_OUT),DIMENSION(:), ALLOCATABLE , intent(inOut) :: sOUT
+	ALLOCATE(sOUT(const_layerNum))
     REAL(8)        , intent(in)    :: xx(sINI%nPar)
     
     !!LOCAL VARIABLES:
-    TYPE(sMEND_INP) sINP  
-    INTEGER*4 i, k 
+    TYPE(sMEND_INP),DIMENSION(:), ALLOCATABLE :: sINP  ! set another dimension as depth
+    ALLOCATE(sINP(const_layerNum))
+    INTEGER*4 i, k, lay 
     INTEGER j, lp, jbeg,jend, tstep, ibeg, iend,iday
     INTEGER iFunc, iObs_time, iHour
     REAL(8) frISOadd(const_nISO)
@@ -759,11 +762,13 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
     jbeg = 24*(nDaysbwDates(sINI%sDate_beg_sim,sINI%sDate_beg_inp2)-1)+1
     jend = 24*nDaysbwDates(sINI%sDate_beg_sim,sINI%sDate_end_inp2)
     
+	do lay=1,const_layerNum
     !!Initial Step:
-    sOUT % CPOOL    = sINP % CPOOL
-    sOUT % NPOOL    = sINP % NPOOL
-    sOUT % MNPOOL   = sINP % MNPOOL
-    sOUT % CN       = sINP % CN
+		sOUT(lay) % CPOOL    = sINP(lay) % CPOOL
+		sOUT(lay) % NPOOL    = sINP(lay) % NPOOL
+		sOUT(lay) % MNPOOL   = sINP(lay) % MNPOOL
+		sOUT(lay) % CN       = sINP(lay) % CN
+	end do
 !    sOUT % CPOOLI   = sINP % CPOOLI
 !    sOUT % CPOOLIFR = sINP % CPOOLIFR
     
@@ -791,193 +796,195 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
         do lp = 1, 24  !!
             i = (iday - 1)*24 + lp  !!hour
             k = ibeg + i
-!            
-            sINP % CPOOL    = sOUT % CPOOL
-            sINP % NPOOL    = sOUT % NPOOL
-            sINP % MNPOOL   = sOUT % MNPOOL
-            sINP % CN       = sOUT % CN
-            if(isnan(sOUT%CN%MBA)) then
-                write(*,*)"iday; hour=", iday, lp, sOUT%CPOOL%MBA, sOUT%NPOOL%MBA, sOUT%CPOOL%DOM, sOUT%NPOOL%DOM
-                write(*,"(A10,100E10.2)")"CFLUX=",sOUT%CFLUX
-                write(*,"(A10,100E10.2)")"NFLUX=",sOUT%NFLUX
-                write(*,"(A10,100E10.2)")"MNFLUX=",sOUT%MNFLUX
-                STOP
-            end if
-!            sINP % CPOOLI = sOUT % CPOOLI
-!            sINP % CPOOLIFR = sOUT % CPOOLIFR
-    !        end if
-            
-            if(k.le.sINI%nHour) then
-!!wgs[7/12/2015]: REVERT: use ARRAY instead of READING inputs at each step    
-!                read(sINI%iFout_ITW_hour,*)iRead,rRead(1:5)
-!                sINP%SIN = rRead(1)
-!                sINP%tmp = rRead(2)
-!                sINP%SWP = rRead(4)
-!                sINP%pH  = rRead(5)
-!!wgs: END
-                
-                sINP%GPP = sINI%SIN(k)
-                sINP%SIN = sINI%SIN(k)*sPAR%fINP
-                sINP%tmp = sINI%STP(k)
-                sINP%SWC = sINI%SWC(k)
-                sINP%SWP = sINI%SWP(k)
-                sINP%pH  = sINI%SpH(k)
-                
-                if(sINI%iKinetics.eq.10) then
-                    sINI%fDOM = fracDOM(sINP%SWC, sINI%porosity)  !! DOM = DOMT * fDOM
-                else
-                    sINI%fDOM = 1.d0  !!DOM = DOMT
-                end if
-                
-                !! [2019-05-10] "dexp" method works better
-                if(sINI%iGPPscaler.eq.0) then
-                    sINI%VNup_VG_GPPscaler = dexp((sINP%GPP/sINI%GPPref - 1.d0) * sPAR%bNup_VG)
-                else
-                    sINI%VNup_VG_GPPscaler = (sINP%GPP/sINI%GPPref) ** sPAR%bNup_VG 
-                end if
-                    
-                sINI%fNO3_Leaching = fracNO3_Leaching(sINP%tmp, sINP%SWC,sINI%porosity,sINI%SWCFC,sINI%Ksat,sINI%Lambda,&
-                                                      sPAR%rNleach,sINI%soilDepth,1.d0)
-                
-                !!External INPUT: BEGIN
-                sOUT % CFLUX % POMadd(1) = sINP%SIN * sINI%SIN_frac(1) + sINI%SIN_other(1,1)  !![mg POM/g soil/h], inputs to POM
-                sOUT % CFLUX % POMadd(2) = sINP%SIN * sINI%SIN_frac(2) + sINI%SIN_other(1,2)
-                sOUT % CFLUX % DOMadd    = sINP%SIN * sINI%SIN_frac(3) + sINI%SIN_other(1,3)  !![mg DOM/g soil/h], inputs to DOM
+!           
+            do lay=1, const_layerNum
+				sINP(lay) % CPOOL    = sOUT(lay) % CPOOL
+				sINP(lay) % NPOOL    = sOUT(lay) % NPOOL
+				sINP(lay) % MNPOOL   = sOUT(lay) % MNPOOL
+				sINP(lay) % CN       = sOUT(lay) % CN
+				if(isnan(sOUT(lay)%CN%MBA)) then
+					write(*,*)"iday; hour=", iday, lp, sOUT(lay)%CPOOL%MBA, sOUT(lay)%NPOOL%MBA, sOUT(lay)%CPOOL%DOM, sOUT(lay)%NPOOL%DOM
+					write(*,"(A10,100E10.2)")"CFLUX=",sOUT(lay)%CFLUX
+					write(*,"(A10,100E10.2)")"NFLUX=",sOUT(lay)%NFLUX
+					write(*,"(A10,100E10.2)")"MNFLUX=",sOUT(lay)%MNFLUX
+					STOP
+				end if
+	!            sINP % CPOOLI = sOUT % CPOOLI
+	!            sINP % CPOOLIFR = sOUT % CPOOLIFR
+		!        end if
+				
+				if(k.le.sINI%nHour) then
+	!!wgs[7/12/2015]: REVERT: use ARRAY instead of READING inputs at each step    
+	!                read(sINI%iFout_ITW_hour,*)iRead,rRead(1:5)
+	!                sINP%SIN = rRead(1)
+	!                sINP%tmp = rRead(2)
+	!                sINP%SWP = rRead(4)
+	!                sINP%pH  = rRead(5)
+	!!wgs: END
+					
+					sINP(lay)%GPP = sINI%SIN(k,lay)
+					sINP(lay)%SIN = sINI%SIN(k,lay)*sPAR%fINP
+					sINP(lay)%tmp = sINI%STP(k,lay)
+					sINP(lay)%SWC = sINI%SWC(k,lay)
+					sINP(lay)%SWP = sINI%SWP(k,lay)
+					sINP(lay)%pH  = sINI%SpH(k,lay)
+					
+					if(sINI%iKinetics.eq.10) then
+						sINI%fDOM = fracDOM(sINP%SWC, sINI%porosity)  !! DOM = DOMT * fDOM
+					else
+						sINI%fDOM = 1.d0  !!DOM = DOMT
+					end if
+					
+					!! [2019-05-10] "dexp" method works better
+					if(sINI%iGPPscaler.eq.0) then
+						sINI%VNup_VG_GPPscaler = dexp((sINP(lay)%GPP/sINI%GPPref - 1.d0) * sPAR%bNup_VG)
+					else
+						sINI%VNup_VG_GPPscaler = (sINP(lay)%GPP/sINI%GPPref) ** sPAR%bNup_VG 
+					end if
+						
+					sINI%fNO3_Leaching = fracNO3_Leaching(sINP(lay)%tmp, sINP(lay)%SWC,sINI%porosity,sINI%SWCFC,sINI%Ksat,sINI%Lambda,&
+														  sPAR%rNleach,sINI%soilDepth,1.d0)
+					
+					!!External INPUT: BEGIN
+					sOUT(lay) % CFLUX % POMadd(1) = sINP(lay)%SIN * sINI%SIN_frac(lay,1) + sINI%SIN_other(1,1)  !![mg POM/g soil/h], inputs to POM
+					sOUT(lay) % CFLUX % POMadd(2) = sINP(lay)%SIN * sINI%SIN_frac(lay,2) + sINI%SIN_other(1,2)
+					sOUT(lay) % CFLUX % DOMadd    = sINP(lay)%SIN * sINI%SIN_frac(lay,3) + sINI%SIN_other(1,3)  !![mg DOM/g soil/h], inputs to DOM
 
-                if(i.ge.jbeg.and.i.le.jend) then
-                    sOUT%CFLUX%POMadd(1) = sOUT%CFLUX%POMadd(1)+sINI%SIN_other(2,1)/DBLE(jend-jbeg+1)
-                    sOUT%CFLUX%POMadd(2) = sOUT%CFLUX%POMadd(2)+sINI%SIN_other(2,2)/DBLE(jend-jbeg+1)
-                    sOUT%CFLUX%DOMadd    = sOUT%CFLUX%DOMadd   +sINI%SIN_other(2,3)/DBLE(jend-jbeg+1)
-                end if
-        !        write(*,*)i,sINP % CADD % POMadd(1:2),sINP % CADD % DOMadd
-                
-                IF(.NOT.sINI%Carbon_only) THEN
-                    sOUT % NFLUX % POMadd(1) = sINP%SIN * sINI%SIN_frac(1)/sINI%CN_LITT(1) + sINI%SIN_other(1,1)/sINI%CN_WOOD(1)  !![mg POM/g soil/h], inputs to POM
-                    sOUT % NFLUX % POMadd(2) = sINP%SIN * sINI%SIN_frac(2)/sINI%CN_LITT(2) + sINI%SIN_other(1,2)/sINI%CN_WOOD(2)
-                    sOUT % NFLUX % DOMadd    = sINP%SIN * sINI%SIN_frac(3)/sINI%CN_LITT(3) + sINI%SIN_other(1,3)/sINI%CN_WOOD(3)  !![mg DOM/g soil/h], inputs to DOM
-                    
-                    if(i.ge.jbeg.and.i.le.jend) then
-                        sOUT%NFLUX%POMadd(1) = sOUT%NFLUX%POMadd(1)+sINI%SIN_other(2,1)/DBLE(jend-jbeg+1)/sINI%CN_ROOT(1)
-                        sOUT%NFLUX%POMadd(2) = sOUT%NFLUX%POMadd(2)+sINI%SIN_other(2,2)/DBLE(jend-jbeg+1)/sINI%CN_ROOT(2)
-                        sOUT%NFLUX%DOMadd    = sOUT%NFLUX%DOMadd   +sINI%SIN_other(2,3)/DBLE(jend-jbeg+1)/sINI%CN_ROOT(3)
-                    end if
-                    
-                    sOUT%MNFLUX%NH4_dep = sINI%SIN_NH4(k)
-                    sOUT%MNFLUX%NO3_dep = sINI%SIN_NO3(k)
-                    if(sOUT%MNFLUX%NH4_dep.lt.1D-10 .or. sOUT%MNFLUX%NO3_dep .lt. 1D-10) then
-                        write(*,*)"Ndep=",iday,sOUT%MNFLUX%NH4_dep, sOUT%MNFLUX%NO3_dep 
-                        stop
-                    end if
-!                    write(*,*)iday,k,sINI%SIN_NH4(k),sINI%SIN_NO3(k),sOUT%MNFLUX%NH4_dep,sOUT%MNFLUX%NO3_dep
-                END IF
-            else !! POST-DATA PERIOD: simulation period w/o input data, sINI%nHour<i<=sINI%nHour_sim
-                !!use available data to fill the missing data after the available period (>sDate_end_all)
-                CALL sDate2YMD(sINI%sDate_end_all,iyr_end_all,imo,ida)
-                CALL sDate2YMD(sDate,iyr,imo,ida)
-                !!---------------------------------------------
-                if(sINI%iScenario == 1) then
-                    !!METHOD1: use 1-year mean hourly data
-                    iJday = iJulianDay(iyr,imo,ida)
-                    j = (iJday - 1)*24 + lp
-                    sINP%GPP = SIN_mean(j)
-                    SIN0 = SIN_mean(j)*sPAR%fINP
-                    STP0 = STP_mean(j)
-                    SWC0 = SWC_mean(j)
-                    SWP0 = SWP_mean(j)
-                    SpH0 = SpH_mean(j)
-                !!---------------------------------------------
-                else
-                    !!METHOD2: use multiple-year available data
-                    j = mod(k,sINI%nHour)   !! mod(k,sINI%nHour)+1  
-                    if(j==0) j=sINI%nHour
-                    sINP%GPP = sINI%SIN(j)
-                    SIN0 = sINI%SIN(j)*sPAR%fINP
-                    STP0 = sINI%STP(j)
-                    SWC0 = sINI%SWC(j)
-                    SWP0 = sINI%SWP(j)
-                    SpH0 = sINI%SpH(j)
-                !!---------------------------------------------
-                end if
-                
-                
-                sINP%tmp = STP0
-                sINP%SWC = SWC0
-                sINP%SWP = SWP0
-                sINP%pH  = SpH0
-                
-                if(sINI%iKinetics.eq.10) then
-                    sINI%fDOM = fracDOM(sINP%SWC, sINI%porosity)  !! DOM = DOMT * fDOM
-                else
-                    sINI%fDOM = 1.d0  !!DOM = DOMT
-                end if
-                
-                
-!                write(*,*)sINI%delta_STP
-!                write(*,*)sINI%delta_SWC
-!                write(*,*)SINI % waterRetention_vg
-                
-                sINP%tmp = STP0 + (iyr - iyr_end_all)*sINI%STP_delta
-                
-                if(sINI%iGPPscaler.eq.0) then
-                    sINI%VNup_VG_GPPscaler = dexp((sINP%GPP/sINI%GPPref - 1.d0) * sPAR%bNup_VG)
-                else
-                    sINI%VNup_VG_GPPscaler = (sINP%GPP/sINI%GPPref) ** sPAR%bNup_VG 
-                end if
-                sINI%fNO3_Leaching = fracNO3_Leaching(sINP%tmp,sINP%SWC,sINI%porosity,sINI%SWCFC,sINI%Ksat,sINI%Lambda,&
-                                                      sPAR%rNleach, sINI%soilDepth,1.d0)
-!                sINP%SWC = sINI%SWC(j) + (iyr - iyr_end_all)*sINI%delta_SWC
-!                sINP%SWC = sINI%SWC(j)*(sINI%delta_SWC**(iyr - iyr_end_all))
-!                rRead(1) = (0.5d0 + 1d0/(1d0 + dexp(sINI%SWC_logis*(iyr - iyr_end_all))))
-                
-!                rRead(1) =  (sINI%SWC_logis(1)+(1d0-sINI%SWC_logis(1))/ &
-!                            (sINI%SWC_logis(1)+(1d0-sINI%SWC_logis(1))*dexp(sINI%SWC_logis(2)*(iyr - sINI%SIN_logis(3)))))/ &
-!                            (sINI%SWC_logis(1)+(1d0-sINI%SWC_logis(1))/ &
-!                            (sINI%SWC_logis(1)+(1d0-sINI%SWC_logis(1))*dexp(sINI%SWC_logis(2)*(iyr_end_all - sINI%SIN_logis(3)))))
-!               
-                rRead(1) = (1d0-(1d0-sINI%SWC_logis(1))*dexp(-sINI%SWC_logis(2)*(iyr_end_all - sINI%SWC_logis(3))))/ &
-                           (1d0-(1d0-sINI%SWC_logis(1))*dexp(-sINI%SWC_logis(2)*(iyr - sINI%SWC_logis(3))))
-                           
-                 !! 8/21/2016, When const Soil Moisture is used, only SWP is set in mend.ini, thus we need to get const SWC first as follows
-!                !! 12/6/2016, When const Soil Moisture is used, only SWC is set in mend.ini
-!                           sINI%SWC(j) = fSWP2SWC(sINI%SWP(j),"MPa", &
-!                                            SINI % waterRetention_vg(1),SINI % waterRetention_vg(2),&
-!                                            SINI % waterRetention_vg(3),SINI % waterRetention_vg(4))
-                
-                sINP%SWC = SWC0*rRead(1) 
-!                write(*,*)'SWC_logis = ',rRead(1),iyr,sINI%SWC(j),sINP%SWC
-                
-                sINP%SWP = fSWC2SWP(sINP%SWC,SINI % waterRetention_vg(1),SINI % waterRetention_vg(2),&
-                                             SINI % waterRetention_vg(3),SINI % waterRetention_vg(4),const_SWPmin)
-                
-                !!External INPUT: BEGIN; assume root input = leaf litter input
-                
-!               sOUT%CFLUX%POMadd(1) = sINI%SIN(j) * sINI%SIN_frac(1) * sINI%SIN_Multiplier !!+ sINI%SIN_other(1,1)  !![mg POM/g soil/h], inputs to POM
-!               sOUT%CFLUX%POMadd(2) = sINI%SIN(j) * sINI%SIN_frac(2) * sINI%SIN_Multiplier !!+ sINI%SIN_other(1,2)
-!               sOUT%CFLUX%DOMadd    = sINI%SIN(j) * sINI%SIN_frac(3) * sINI%SIN_Multiplier
-                !! update sINI%SIN_Multiplier according to the logistic equation
-                rRead(5) = (1+dexp(sINI%SIN_logis(1)-sINI%SIN_logis(2)*(iyr_end_all - sINI%SIN_logis(3))))/ &
-                           (1+dexp(sINI%SIN_logis(1)-sINI%SIN_logis(2)*(iyr - sINI%SIN_logis(3))))
-!                write(*,*)'SIN_logis = ',rRead(1), iyr, sINI%SIN_logis
-                
-                !!wgs[9/27/2016]: currently only assumes linear increase in DOM fraction, needs to be modified 
-                rRead(3) = min(sINI%SIN_frac(3)*2d0, sINI%SIN_frac(3) + sINI%SIN_logis(4)*(iyr - iyr_end_all))  !! new DOM fraction
-                rRead(1) = sINI%SIN_frac(1)/(sINI%SIN_frac(1) + sINI%SIN_frac(2)) * (1d0 - rRead(3))             !! new POM1 fraction
-                rRead(2) = sINI%SIN_frac(2)/(sINI%SIN_frac(1) + sINI%SIN_frac(2)) * (1d0 - rRead(3))             !! new POM2 fraction
-                
-                sOUT%CFLUX%POMadd(1) = SIN0 * rRead(1) * sINI%SIN_Multiplier * rRead(5) !!+ sINI%SIN_other(1,1)  !![mg POM/g soil/h], inputs to POM
-                sOUT%CFLUX%POMadd(2) = SIN0 * rRead(2) * sINI%SIN_Multiplier * rRead(5) !!+ sINI%SIN_other(1,2)
-                sOUT%CFLUX%DOMadd    = SIN0 * rRead(3) * sINI%SIN_Multiplier * rRead(5) !!+ sINI%SIN_other(1,3)  !![mg DOM/g soil/h], inputs to DOM
-                
-                
-                IF(.NOT.sINI%Carbon_only) THEN
-                    sOUT%NFLUX%POMadd(1) = SIN0 * sINI%SIN_frac(1) * sINI%SIN_Multiplier/sINI%CN_LITT(1) !!+ sINI%SIN_other(1,1)  !![mg POM/g soil/h], inputs to POM
-                    sOUT%NFLUX%POMadd(2) = SIN0 * sINI%SIN_frac(2) * sINI%SIN_Multiplier/sINI%CN_LITT(2) !!+ sINI%SIN_other(1,2)
-                    sOUT%NFLUX%DOMadd    = SIN0 * sINI%SIN_frac(3) * sINI%SIN_Multiplier/sINI%CN_LITT(3)
-                    
-                    sOUT%MNFLUX%NH4_dep = sINI%SIN_NH4(j)   !!TODO
-                    sOUT%MNFLUX%NO3_dep = sINI%SIN_NO3(j)   !!TODO
-                END IF
-            end if
+					if(i.ge.jbeg.and.i.le.jend) then
+						sOUT(lay)%CFLUX%POMadd(1) = sOUT(lay)%CFLUX%POMadd(1)+sINI%SIN_other(2,1)/DBLE(jend-jbeg+1)
+						sOUT(lay)%CFLUX%POMadd(2) = sOUT(lay)%CFLUX%POMadd(2)+sINI%SIN_other(2,2)/DBLE(jend-jbeg+1)
+						sOUT(lay)%CFLUX%DOMadd    = sOUT(lay)%CFLUX%DOMadd   +sINI%SIN_other(2,3)/DBLE(jend-jbeg+1)
+					end if
+			!        write(*,*)i,sINP % CADD % POMadd(1:2),sINP % CADD % DOMadd
+					
+					IF(.NOT.sINI%Carbon_only) THEN
+						sOUT % NFLUX % POMadd(1) = sINP%SIN * sINI%SIN_frac(1)/sINI%CN_LITT(1) + sINI%SIN_other(1,1)/sINI%CN_WOOD(1)  !![mg POM/g soil/h], inputs to POM
+						sOUT % NFLUX % POMadd(2) = sINP%SIN * sINI%SIN_frac(2)/sINI%CN_LITT(2) + sINI%SIN_other(1,2)/sINI%CN_WOOD(2)
+						sOUT % NFLUX % DOMadd    = sINP%SIN * sINI%SIN_frac(3)/sINI%CN_LITT(3) + sINI%SIN_other(1,3)/sINI%CN_WOOD(3)  !![mg DOM/g soil/h], inputs to DOM
+						
+						if(i.ge.jbeg.and.i.le.jend) then
+							sOUT%NFLUX%POMadd(1) = sOUT%NFLUX%POMadd(1)+sINI%SIN_other(2,1)/DBLE(jend-jbeg+1)/sINI%CN_ROOT(1)
+							sOUT%NFLUX%POMadd(2) = sOUT%NFLUX%POMadd(2)+sINI%SIN_other(2,2)/DBLE(jend-jbeg+1)/sINI%CN_ROOT(2)
+							sOUT%NFLUX%DOMadd    = sOUT%NFLUX%DOMadd   +sINI%SIN_other(2,3)/DBLE(jend-jbeg+1)/sINI%CN_ROOT(3)
+						end if
+						
+						sOUT%MNFLUX%NH4_dep = sINI%SIN_NH4(k)
+						sOUT%MNFLUX%NO3_dep = sINI%SIN_NO3(k)
+						if(sOUT%MNFLUX%NH4_dep.lt.1D-10 .or. sOUT%MNFLUX%NO3_dep .lt. 1D-10) then
+							write(*,*)"Ndep=",iday,sOUT%MNFLUX%NH4_dep, sOUT%MNFLUX%NO3_dep 
+							stop
+						end if
+	!                    write(*,*)iday,k,sINI%SIN_NH4(k),sINI%SIN_NO3(k),sOUT%MNFLUX%NH4_dep,sOUT%MNFLUX%NO3_dep
+					END IF
+				else !! POST-DATA PERIOD: simulation period w/o input data, sINI%nHour<i<=sINI%nHour_sim
+					!!use available data to fill the missing data after the available period (>sDate_end_all)
+					CALL sDate2YMD(sINI%sDate_end_all,iyr_end_all,imo,ida)
+					CALL sDate2YMD(sDate,iyr,imo,ida)
+					!!---------------------------------------------
+					if(sINI%iScenario == 1) then
+						!!METHOD1: use 1-year mean hourly data
+						iJday = iJulianDay(iyr,imo,ida)
+						j = (iJday - 1)*24 + lp
+						sINP%GPP = SIN_mean(j)
+						SIN0 = SIN_mean(j)*sPAR%fINP
+						STP0 = STP_mean(j)
+						SWC0 = SWC_mean(j)
+						SWP0 = SWP_mean(j)
+						SpH0 = SpH_mean(j)
+					!!---------------------------------------------
+					else
+						!!METHOD2: use multiple-year available data
+						j = mod(k,sINI%nHour)   !! mod(k,sINI%nHour)+1  
+						if(j==0) j=sINI%nHour
+						sINP(lay)%GPP = sINI%SIN(lay,j)
+						SIN0 = sINI%SIN(lay,j)*sPAR%fINP
+						STP0 = sINI%STP(lay,j)
+						SWC0 = sINI%SWC(lay,j)
+						SWP0 = sINI%SWP(lay,j)
+						SpH0 = sINI%SpH(lay,j)
+					!!---------------------------------------------
+					end if
+					
+					
+					sINP(lay)%tmp = STP0
+					sINP(lay)%SWC = SWC0
+					sINP(lay)%SWP = SWP0
+					sINP(lay)%pH  = SpH0
+					
+					if(sINI%iKinetics.eq.10) then
+						sINI%fDOM = fracDOM(sINP%SWC, sINI%porosity)  !! DOM = DOMT * fDOM
+					else
+						sINI%fDOM = 1.d0  !!DOM = DOMT
+					end if
+					
+					
+	!                write(*,*)sINI%delta_STP
+	!                write(*,*)sINI%delta_SWC
+	!                write(*,*)SINI % waterRetention_vg
+					
+					sINP%tmp = STP0 + (iyr - iyr_end_all)*sINI%STP_delta
+					
+					if(sINI%iGPPscaler.eq.0) then
+						sINI%VNup_VG_GPPscaler = dexp((sINP(lay)%GPP/sINI%GPPref - 1.d0) * sPAR%bNup_VG)
+					else
+						sINI%VNup_VG_GPPscaler = (sINP(lay)%GPP/sINI%GPPref) ** sPAR%bNup_VG 
+					end if
+					sINI%fNO3_Leaching = fracNO3_Leaching(sINP(lay)%tmp,sINP(lay)%SWC,sINI%porosity,sINI%SWCFC,sINI%Ksat,sINI%Lambda,&
+														  sPAR%rNleach, sINI%soilDepth,1.d0)
+	!                sINP%SWC = sINI%SWC(j) + (iyr - iyr_end_all)*sINI%delta_SWC
+	!                sINP%SWC = sINI%SWC(j)*(sINI%delta_SWC**(iyr - iyr_end_all))
+	!                rRead(1) = (0.5d0 + 1d0/(1d0 + dexp(sINI%SWC_logis*(iyr - iyr_end_all))))
+					
+	!                rRead(1) =  (sINI%SWC_logis(1)+(1d0-sINI%SWC_logis(1))/ &
+	!                            (sINI%SWC_logis(1)+(1d0-sINI%SWC_logis(1))*dexp(sINI%SWC_logis(2)*(iyr - sINI%SIN_logis(3)))))/ &
+	!                            (sINI%SWC_logis(1)+(1d0-sINI%SWC_logis(1))/ &
+	!                            (sINI%SWC_logis(1)+(1d0-sINI%SWC_logis(1))*dexp(sINI%SWC_logis(2)*(iyr_end_all - sINI%SIN_logis(3)))))
+	!               
+					rRead(1) = (1d0-(1d0-sINI%SWC_logis(1))*dexp(-sINI%SWC_logis(2)*(iyr_end_all - sINI%SWC_logis(3))))/ &
+							   (1d0-(1d0-sINI%SWC_logis(1))*dexp(-sINI%SWC_logis(2)*(iyr - sINI%SWC_logis(3))))
+							   
+					 !! 8/21/2016, When const Soil Moisture is used, only SWP is set in mend.ini, thus we need to get const SWC first as follows
+	!                !! 12/6/2016, When const Soil Moisture is used, only SWC is set in mend.ini
+	!                           sINI%SWC(j) = fSWP2SWC(sINI%SWP(j),"MPa", &
+	!                                            SINI % waterRetention_vg(1),SINI % waterRetention_vg(2),&
+	!                                            SINI % waterRetention_vg(3),SINI % waterRetention_vg(4))
+					
+					sINP(lay)%SWC = SWC0*rRead(1) 
+	!                write(*,*)'SWC_logis = ',rRead(1),iyr,sINI%SWC(j),sINP%SWC
+					
+					sINP%SWP = fSWC2SWP(sINP%SWC,SINI % waterRetention_vg(1),SINI % waterRetention_vg(2),&
+												 SINI % waterRetention_vg(3),SINI % waterRetention_vg(4),const_SWPmin)
+					
+					!!External INPUT: BEGIN; assume root input = leaf litter input
+					
+	!               sOUT%CFLUX%POMadd(1) = sINI%SIN(j) * sINI%SIN_frac(1) * sINI%SIN_Multiplier !!+ sINI%SIN_other(1,1)  !![mg POM/g soil/h], inputs to POM
+	!               sOUT%CFLUX%POMadd(2) = sINI%SIN(j) * sINI%SIN_frac(2) * sINI%SIN_Multiplier !!+ sINI%SIN_other(1,2)
+	!               sOUT%CFLUX%DOMadd    = sINI%SIN(j) * sINI%SIN_frac(3) * sINI%SIN_Multiplier
+					!! update sINI%SIN_Multiplier according to the logistic equation
+					rRead(5) = (1+dexp(sINI%SIN_logis(1)-sINI%SIN_logis(2)*(iyr_end_all - sINI%SIN_logis(3))))/ &
+							   (1+dexp(sINI%SIN_logis(1)-sINI%SIN_logis(2)*(iyr - sINI%SIN_logis(3))))
+	!                write(*,*)'SIN_logis = ',rRead(1), iyr, sINI%SIN_logis
+					
+					!!wgs[9/27/2016]: currently only assumes linear increase in DOM fraction, needs to be modified 
+					rRead(3) = min(sINI%SIN_frac(3)*2d0, sINI%SIN_frac(3) + sINI%SIN_logis(4)*(iyr - iyr_end_all))  !! new DOM fraction
+					rRead(1) = sINI%SIN_frac(1)/(sINI%SIN_frac(1) + sINI%SIN_frac(2)) * (1d0 - rRead(3))             !! new POM1 fraction
+					rRead(2) = sINI%SIN_frac(2)/(sINI%SIN_frac(1) + sINI%SIN_frac(2)) * (1d0 - rRead(3))             !! new POM2 fraction
+					
+					sOUT(lay)%CFLUX%POMadd(1) = SIN0 * rRead(1) * sINI%SIN_Multiplier * rRead(5) !!+ sINI%SIN_other(1,1)  !![mg POM/g soil/h], inputs to POM
+					sOUT(lay)%CFLUX%POMadd(2) = SIN0 * rRead(2) * sINI%SIN_Multiplier * rRead(5) !!+ sINI%SIN_other(1,2)
+					sOUT(lay)%CFLUX%DOMadd    = SIN0 * rRead(3) * sINI%SIN_Multiplier * rRead(5) !!+ sINI%SIN_other(1,3)  !![mg DOM/g soil/h], inputs to DOM
+					
+					
+					IF(.NOT.sINI%Carbon_only) THEN
+						sOUT%NFLUX%POMadd(1) = SIN0 * sINI%SIN_frac(1) * sINI%SIN_Multiplier/sINI%CN_LITT(1) !!+ sINI%SIN_other(1,1)  !![mg POM/g soil/h], inputs to POM
+						sOUT%NFLUX%POMadd(2) = SIN0 * sINI%SIN_frac(2) * sINI%SIN_Multiplier/sINI%CN_LITT(2) !!+ sINI%SIN_other(1,2)
+						sOUT%NFLUX%DOMadd    = SIN0 * sINI%SIN_frac(3) * sINI%SIN_Multiplier/sINI%CN_LITT(3)
+						
+						sOUT%MNFLUX%NH4_dep = sINI%SIN_NH4(j)   !!TODO
+						sOUT%MNFLUX%NO3_dep = sINI%SIN_NO3(j)   !!TODO
+					END IF
+				end if
+			end do
 
 !            do j = 1, const_nPOM
 !                sINP % CADDI % POMadd(j) = sINP%CADD%POMadd(j)*frISOadd
@@ -986,13 +993,15 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
             !!External INPUT: END
 
             sINI%sINP = sINP
-            CALL subMEND_PAR(xx, sPAR, sINI)   !!modify parameter values by soil temperature, water potential, pH
-            CALL subMEND(xx, sPAR, sINI, sOUT) !!MEND model 
-            if (sINI % iModel .eq. 0 .or. sINI % iModel .eq. 3) then !output results for model simulation
-                CALL subMEND_output_rate(sDate,lp, sINI, sPAR, sINP, sOUT)
-                CALL subMEND_output(sDate,lp, sPAR, sINI, sOUT)
-            end if
+			do lay=1,const_layerNum
 
+				CALL subMEND_PAR(xx, sPAR, sINI,lay)   !!modify parameter values by soil temperature, water potential, pH
+				CALL subMEND(xx, sPAR, sINI, sOUT,lay) !!MEND model 
+				if (sINI % iModel .eq. 0 .or. sINI % iModel .eq. 3) then !output results for model simulation
+					CALL subMEND_output_rate(sDate,lp, sINI, sPAR, sINP, sOUT)
+					CALL subMEND_output(sDate,lp, sPAR, sINI, sOUT)
+				end if
+			end do
             !!Extract output variables to compare with observations 
             CALL sOUT_OPT_h(sINI%nVARopt,24,lp,dSIM,sPAR,sOUT,sINI%VARopt_int)
             dSIM_h((iday-1)*24+lp,:) = dSIM(lp,:)   !!continuous hourly output
@@ -1102,7 +1111,7 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
 END !!subroutine subMEND_RUN
 !-----------------------------------------------------------------------------
 
-SUBROUTINE subMEND(xx, sPAR, sINI, sOUT)
+SUBROUTINE subMEND(xx, sPAR, sINI, sOUT_all,lay)
     !model components 
 !    USE MOD_MEND
 !    IMPLICIT NONE
@@ -1110,11 +1119,13 @@ SUBROUTINE subMEND(xx, sPAR, sINI, sOUT)
     
     TYPE(sMEND_PAR), intent(inout)  :: sPAR
     TYPE(sMEND_INI), intent(in)     :: sINI
-    TYPE(sMEND_OUT), intent(inout)  :: sOUT
+    TYPE(sMEND_OUT), intent(inout)  , DIMENSION(const_layerNum):: sOUT_all 
     REAL(8)        , intent(in)     :: xx(sINI%nPar)  !!used in subMEND_PAR
+	INTEGER, intent(in) 			:: lay
     
     !!LOCAL VARIABLES:
     TYPE(sMEND_INP) sINP
+    TYPE(sMEND_OUT) sOUT
     TYPE(sMM_PAR) smmPAR
     TYPE(sMM_INP) smmINP
 
@@ -1131,8 +1142,8 @@ SUBROUTINE subMEND(xx, sPAR, sINI, sOUT)
     
 !    ASSOCIATE(sINP => sINI%sINP) 
     frMBA_to_POM = (/0.1d0, 0.9d0/)  !! 10% entering POM_Oxidative, 90% entering POM_Hydrolytic
-    sINP = sINI%sINP
-
+    sINP = sINI(lay)%sINP
+	sOUT = sOUT_all(lay)
 !    write(*,'(a15,50d10.3)')"sINP%CPOOL=",sINP%CPOOL
     !compute initial total mass of the system 
 !    if(sINI%iKinetics.eq.10) then
@@ -1726,7 +1737,7 @@ IF(.NOT.sINI%Carbon_only) THEN
     !!N MASS BALANCE: END
 END IF !!IF(.NOT.sINI%Carbon_only) 
     !!++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    
+    sOUT_all(lay)=sOUT  ! store each output in each layer
     
 !    do j = 2, const_nISO !j = 1 for lightest isotope, e.g., C12
 !        !Isotopic components
@@ -1843,7 +1854,7 @@ END IF !!IF(.NOT.sINI%Carbon_only)
 END !!subroutine subMEND!MEND model
 
 !-----------------------------------------------------------------------------
-SUBROUTINE subMEND_PAR(xx, sPAR, sINI)
+SUBROUTINE subMEND_PAR(xx, sPAR, sINI,lay)
 !    MEND MODEL CODE 
 !    USE MOD_MEND
 !    IMPLICIT NONE
@@ -1856,7 +1867,8 @@ SUBROUTINE subMEND_PAR(xx, sPAR, sINI)
     TYPE(sMEND_PAR), intent(inout) :: sPAR
     TYPE(sMEND_INI), intent(inout) :: sINI
     REAL(8)        , intent(in)    :: xx(sINI%nPar)
-    
+    INTEGER,         intent (in)   :: lay
+	
     !!LOCAL VARIABLES:
     TYPE(sMEND_PAR) sPARbase  !!base PAR value = xx(:)
     REAL(8) CUE_slope,CUE_ref, SWPmin !!CUE_slope = (-0.005, -0.016)  
@@ -1918,6 +1930,8 @@ SUBROUTINE subMEND_PAR(xx, sPAR, sINI)
     sPARbase%KsDOM      = xx(19)
     sPARbase%Yg         = xx(20)
 !    sPARbase%Ygsl       = xx(21)  !!no Ygsl in sPAR
+	sPARbase%Ygdep		==xx(48)
+	
     CUE_slope           = -1.D0*xx(21)
     sPARbase%Q10        = xx(22)  
     sPARbase%gamma      = xx(23)
@@ -2086,7 +2100,7 @@ SUBROUTINE subMEND_PAR(xx, sPAR, sINI)
     sCase = "CUE"  !!label, no-use
     CUE_ref   = sPARbase%Yg !!xx(20)
 !    CUE_slope = -1.D0*xx(21)
-    sPAR % Yg = fT_CUE(tp, const_Tref, CUE_slope, CUE_ref) ![-], carbon use efficiency in uptake of DOM by MB 
+    sPAR % Yg = fTdep_CUE(tp, const_Tref, CUE_slope, CUE_ref,lay,sPARbase%Ygdep) ![-], carbon use efficiency in uptake of DOM by MB 
     
     !![7] MICROBIAL MORTALITY
 !    sPAR%wdie = sPARbase%wdorm
@@ -2382,6 +2396,32 @@ REAL(8) function fT_CUE(T,Tref,slope,CUEref)
     REAL(8), PARAMETER:: CUEmin = 0.1D-1
     
     fT_CUE = fT_Linear(T, Tref, slope, CUEref)
+    if(fT_CUE.gt.CUEmax) then
+        fT_CUE = CUEmax
+    elseif(fT_CUE.lt.CUEmin) then
+        fT_CUE = CUEmin
+    end if
+    
+    return
+END
+!-------------------------------------------------------------------
+REAL(8) function fTdep_CUE(T,Tref,slope,CUEref,lay,CUE_dep)
+    !fT_CUE: [-], half-saturation constant in M-M kinetics (Km)modified by Temperature
+    !slope: [1/degree C]
+    !intercept: [-]
+    !! parameter values: Wang et al. (2015), ISMEJ 
+    !!ARGUMENTS:
+    REAL(8), intent(in):: T, Tref,slope,CUEref,lay,CUE_dep
+!    REAL(8), PARAMETER :: Tref      = 0    !![degree C]
+!    REAL(8), PARAMETER :: slope     = -0.01
+!    REAL(8), PARAMETER :: intercept = 0.56  !! []
+    
+    !!LOCAL VARIABLES:
+    REAL(8), PARAMETER:: CUEmax = 0.9D0
+    REAL(8), PARAMETER:: CUEmin = 0.1D-1
+    
+    fT_CUE = fT_Linear(T, Tref, slope, CUEref)
+	fT_CUE=fT_CUE * dexp((-lay+1D0)/CUE_dep))
     if(fT_CUE.gt.CUEmax) then
         fT_CUE = CUEmax
     elseif(fT_CUE.lt.CUEmin) then

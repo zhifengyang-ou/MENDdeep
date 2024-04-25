@@ -11,10 +11,14 @@ MODULE MOD_MEND_TYPE
     INTEGER, PARAMETER:: const_nPOOL_MN     = 15                     !# of state variables in sMEND_POOL_MN
     INTEGER, PARAMETER:: const_nFLUX        = 45                    !# of flux variables in sMEND_FLUX
     INTEGER, PARAMETER:: const_nFLUX_MN     = 36                    !# of flux variables in sMEND_FLUX_MN
-    INTEGER, PARAMETER:: const_nPAR         = 61                    !# of parameters in sMEND_PAR
-    INTEGER, PARAMETER:: const_nPAR0        = 47                    !# of parameters for calibration
+    INTEGER, PARAMETER:: const_nPAR         = 62                    !# of parameters in sMEND_PAR
+    INTEGER, PARAMETER:: const_nPAR0        = 48                    !# of parameters for calibration
     INTEGER, PARAMETER:: const_nVAR0        = 28                    !# of variables for calibration
     INTEGER, PARAMETER:: const_nRATE        = 45                    !# of derived rates in '*_RATE_*.out', 19
+	
+	INTEGER, PARAMETER:: const_layerNum        = 5                  !# of layers in soils----zhifeng 20240419
+	real(8), PARAMETER:: const_SOMratio(const_layerNum)=(/1d0,5d-1,3d-1,2d-1,1d-1/)        !# Initial ratio of different depth for SOM_C/POM_C/MOM_C/MBC
+	
     
     INTEGER, PARAMETER:: const_nPOM = 2                             !# of particular organic carbon pools
     INTEGER, PARAMETER:: const_nISO = 2                             !# of isotopes, e.g., C12, C14, C13
@@ -255,6 +259,7 @@ MODULE MOD_MEND_TYPE
          REAL(8) Vm                         ![1/h], specific microbial maintenance rate
          REAL(8) KsDOM                      ![mg DOC/cm3], half-saturation constant for uptake of DOC by MB
          REAL(8) Yg                         ![-], carbon use efficiency in uptake of DOC by MB
+		 REAL(8) Ygdep						![-], carbon use efficiency change along depth, should be negative-- zhifeng
          REAL(8) Q10                        ![-], exponential in SWP scalar (fSWP0) for microbial mortality
          REAL(8) gamma                      ![-], rMORT = gama*Vm
          REAL(8) rMORT                      ![1/h], microbial mortality
@@ -336,7 +341,7 @@ MODULE MOD_MEND_TYPE
       
 !-----------------------------------------------------------------------------! 
        TYPE sMEND_INI
-         TYPE(sMEND_INP) :: sINP                           !INPUT
+         TYPE(sMEND_INP), DIMENSION(const_layerNum):: sINP                           !INPUT
          CHARACTER(len=10) SITE                         !!Site Name, used for prefix of output files
          CHARACTER(len=3) BIOME                         !!'ASM' = arid/semiarid/mediterranean; 'MGC'=mesic grassland & cropland; 'MDF'=Mesic Deciduous Forest; 'MCF'=MEsic Conifer Forest
          CHARACTER(len=3) SOM                           !!'SOD' = disturbed soil; 'SOL'=intact soil; 'LIT'=litter
@@ -369,8 +374,8 @@ MODULE MOD_MEND_TYPE
          INTEGER iFout_SIM_obs                          !file unit for response variables matching observations
          INTEGER iFout_SIM_day                          !file unit for response variables, mean daily output
          INTEGER iFout_SIM_mon                          !file unit for response variables, mean monthly output
-         INTEGER iFout_VAR_hour                          !file unit for all response variables, user-defined output time-step
-         INTEGER iFout_FLX_hour                          !file unit for all flux variables, user-defined output time-step
+         INTEGER iFout_VAR_hour                         !file unit for all response variables, user-defined output time-step
+         INTEGER iFout_FLX_hour                         !file unit for all flux variables, user-defined output time-step
          INTEGER iFout_RATE_hour                        !file unit for derived rates, e.g., 1st-order decomposition rate, active fraction, phi
          INTEGER iFout_ITW_hour                         !file unit for Input (e.g., litter), Temperature, Water content & potential 
          INTEGER iFout_PAR_hour                         !file unit for hourly parameters modified by Temperature, Water potential, and other factors     
@@ -422,13 +427,13 @@ MODULE MOD_MEND_TYPE
          REAL(8), ALLOCATABLE:: rOBJw(:)                !obj weighting factor
          REAL(8), ALLOCATABLE:: dOBS_opt(:, :)          !date,obs,iVARopt
          REAL(8), ALLOCATABLE:: dSIM_opt(:, :)          !date,sim,sim_sd
-         REAL(8), ALLOCATABLE:: STP(:)                  ![C], soil temperature
-         REAL(8), ALLOCATABLE:: SWC(:)                  ![fraction],soil water content
-         REAL(8), ALLOCATABLE:: SWP(:)                  ![MPa], soil water potential 
-         REAL(8), ALLOCATABLE:: SpH(:)                  !soil pH
-         REAL(8), ALLOCATABLE:: SIN(:)                  ![mgC/cm3/h],SOC input, e.g., litter
+         REAL(8), ALLOCATABLE:: STP(:, :)                  ![C], soil temperature ! add dimension for soil layers-zhifeng 20240419
+         REAL(8), ALLOCATABLE:: SWC(:, :)                  ![fraction],soil water content
+         REAL(8), ALLOCATABLE:: SWP(:, :)                  ![MPa], soil water potential 
+         REAL(8), ALLOCATABLE:: SpH(:, :)                  !soil pH
+         REAL(8), ALLOCATABLE:: SIN(:, :)                  ![mgC/cm3/h],SOC input, e.g., litter
          REAL(8) SIN_other(2,3)                         ![mgC/cm3/h | mgC/cm3], other constant inputs to 3 pools, e.g., coarse wood, roots, SIN_other(1,:): between sDate_beg_all & sDate_end_all; SIN_other(2,:): between sDate_beg_inp2 & sDate_end_inp2; 
-         REAL(8) SIN_frac(3)                            !fraction of SOC input to 3 pools (POM1, POM2, & DOC)
+         REAL(8) SIN_frac(const_layerNum,3)             !fraction of SOC input to 3 pools (POM1, POM2, & DOC)
          REAL(8) SIN_Multiplier                         !multiplier for litter input during post-data period simulation: SIN*SIN_multiplier
          REAL(8), ALLOCATABLE:: SIN_NH4(:)              ![mgC/cm3/h],NH4 INPUT RATE
          REAL(8), ALLOCATABLE:: SIN_NO3(:)              ![mgC/cm3/h],NH4 INPUT RATE
