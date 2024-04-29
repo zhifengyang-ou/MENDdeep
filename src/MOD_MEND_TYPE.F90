@@ -18,6 +18,7 @@ MODULE MOD_MEND_TYPE
 	
 	INTEGER, PARAMETER:: const_layerNum        = 5                  !# of layers in soils----zhifeng 20240419
 	real(8), PARAMETER:: const_SOMratio(const_layerNum)=(/1d0,5d-1,3d-1,2d-1,1d-1/)        !# Initial ratio of different depth for SOM_C/POM_C/MOM_C/MBC
+	real(8), PARAMETER:: const_inp_ratio(const_layerNum)=(/5d-1,3d-1,1d-1,6d-2,4d-2/)        !# Assume a ratio of plant C input
 	
     
     INTEGER, PARAMETER:: const_nPOM = 2                             !# of particular organic carbon pools

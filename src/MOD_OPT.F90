@@ -130,9 +130,9 @@ SUBROUTINE SCEUA(sPAR_SCE, sPAR, sINI, sOUT)
 !c  ARRAYS FROM THE INPUT DATA
       !!ARGUMENTS:
       TYPE(sSCE_PAR) ,intent(inout):: sPAR_SCE
-      TYPE(sMEND_PAR),intent(inout):: sPAR
+      TYPE(sMEND_PAR),intent(inout),DIMENSION(const_layerNum):: sPAR
       TYPE(sMEND_INI),intent(inout):: sINI
-      TYPE(sMEND_OUT),intent(inout):: sOUT
+      TYPE(sMEND_OUT),intent(inout),DIMENSION(const_layerNum):: sOUT
 
       !!LOCAL VARIABLES:
       INTEGER i, j, k, k1, k2, l, lpos, iCALL, ibound 
@@ -556,9 +556,9 @@ SUBROUTINE cce(sPAR_SCE, sPAR, sINI, sOUT, s,sf,xnstd,iCALL,iseed)
 !c          = 0 , no
     !!ARGUMENTS:
       TYPE(sSCE_PAR) ,intent(inout):: sPAR_SCE
-      TYPE(sMEND_PAR),intent(inout):: sPAR
+      TYPE(sMEND_PAR),intent(inout),DIMENSION(const_layerNum):: sPAR
       TYPE(sMEND_INI),intent(inout):: sINI
-      TYPE(sMEND_OUT),intent(inout):: sOUT
+      TYPE(sMEND_OUT),intent(inout),DIMENSION(const_layerNum):: sOUT
 
 !      parameter (c1=0.8,c2=0.4)
       INTEGER iCALL, iseed

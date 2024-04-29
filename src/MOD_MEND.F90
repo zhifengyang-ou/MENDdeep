@@ -165,42 +165,42 @@ SUBROUTINE subMEND_INI(sINI)
 			CN_DOM = sINI%dINI(22)
 			!!CN_MB = sINI%dINI(23)
 			!!COMPUTE CN_POM1
-			frac = (/sINP % CPOOL % POM(1)/(sINI%dINI(13)+sINI%dINI(12)),&
-					sINP % CPOOL % POM(2)/(sINI%dINI(13)+sINI%dINI(12)), &
+			frac = (/sINP(i) % CPOOL % POM(1)/(sINI%dINI(13)+sINI%dINI(12)),&
+					sINP(i) % CPOOL % POM(2)/(sINI%dINI(13)+sINI%dINI(12)), &
 					sINI%dINI(13)/(sINI%dINI(13)+sINI%dINI(12))/)
 			rRead = frac(1)/(1.D0/sINI%dINI(19) - frac(3)/sINI%dINI(21) - frac(2)/const_CN_Cellulose)
 			
-			sINP % NPOOL % POM(1)= sINP % CPOOL % POM(1)/rRead !!sINI%dINI(20)  !!lignin
-			sINP % NPOOL % POM(2)= sINP % CPOOL % POM(2)/const_CN_Cellulose  !!cellulose
-			sINP % NPOOL % MOM   = sINP % CPOOL % MOM/sINI%dINI(21)
-			sINP % NPOOL % QOM   = sINP % CPOOL % QOM/sINI%dINI(21)
-			sINP % NPOOL % DOM   = sINP % CPOOL % DOM/sINI%dINI(22)
-			sINP % NPOOL % DOMS   = sINP % CPOOL % DOMS/sINI%dINI(22)
-			sINP % NPOOL % DOMT   = sINP % CPOOL % DOMT/sINI%dINI(22)
-			sINP % NPOOL % MBA   = sINP % CPOOL % MBA/sINI%dINI(23)
-			sINP % NPOOL % MBD   = sINP % CPOOL % MBD/sINI%dINI(23)
-			sINP % NPOOL % ENZP  = sINP % CPOOL % ENZP/sINI % CN_ENZP
-			sINP % NPOOL % ENZM  = sINP % CPOOL % ENZM/sINI % CN_ENZM
+			sINP(i) % NPOOL % POM(1)= sINP(i) % CPOOL % POM(1)/rRead !!sINI%dINI(20)  !!lignin
+			sINP(i) % NPOOL % POM(2)= sINP(i) % CPOOL % POM(2)/const_CN_Cellulose  !!cellulose
+			sINP(i) % NPOOL % MOM   = sINP(i) % CPOOL % MOM/sINI%dINI(21)
+			sINP(i) % NPOOL % QOM   = sINP(i) % CPOOL % QOM/sINI%dINI(21)
+			sINP(i) % NPOOL % DOM   = sINP(i) % CPOOL % DOM/sINI%dINI(22)
+			sINP(i) % NPOOL % DOMS   = sINP(i) % CPOOL % DOMS/sINI%dINI(22)
+			sINP(i) % NPOOL % DOMT   = sINP(i) % CPOOL % DOMT/sINI%dINI(22)
+			sINP(i) % NPOOL % MBA   = sINP(i) % CPOOL % MBA/sINI%dINI(23)
+			sINP(i) % NPOOL % MBD   = sINP(i) % CPOOL % MBD/sINI%dINI(23)
+			sINP(i) % NPOOL % ENZP  = sINP(i) % CPOOL % ENZP/sINI % CN_ENZP
+			sINP(i) % NPOOL % ENZM  = sINP(i) % CPOOL % ENZM/sINI % CN_ENZM
 
-			sINP % MNPOOL % NH4     = 0.5d0*sINI%dINI(24)
-			sINP % MNPOOL % NH4ads  = 0.5d0*sINI%dINI(24)
-			sINP % MNPOOL % NO3  = sINI%dINI(25)
+			sINP(i) % MNPOOL % NH4     = 0.5d0*sINI%dINI(24)
+			sINP(i) % MNPOOL % NH4ads  = 0.5d0*sINI%dINI(24)
+			sINP(i) % MNPOOL % NO3  = sINI%dINI(25)
 			
-			sINP % MNPOOL % NO2 = 0.1d0*sINP % MNPOOL % NO3
-			sINP % MNPOOL % NO = 0.05d0*sINP % MNPOOL % NO3
-			sINP % MNPOOL % N2O = sINP % MNPOOL % NO
-			sINP % MNPOOL % N2 = 1d-2 !!sINP % MNPOOL % NO
+			sINP(i) % MNPOOL % NO2 = 0.1d0*sINP(i) % MNPOOL % NO3
+			sINP(i) % MNPOOL % NO = 0.05d0*sINP(i) % MNPOOL % NO3
+			sINP(i) % MNPOOL % N2O = sINP(i) % MNPOOL % NO
+			sINP(i) % MNPOOL % N2 = 1d-2 !!sINP(i) % MNPOOL % NO
 			
-			rRead = sINP % MNPOOL % NH4 + sINP % MNPOOL % NO3 + sINP % MNPOOL % NO2 &
-				  + sINP % MNPOOL % NO + sINP % MNPOOL % N2O + sINP % MNPOOL % N2
-			rRead = rRead/(sum(sINP % NPOOL % POM) + sINP % NPOOL % MOM)
-			sINP % CPOOL % ENZNmt = rRead*(sum(sINP % CPOOL % ENZP) + sINP % CPOOL % ENZM)
-			sINP % CPOOL % ENZNm = sINP % CPOOL % ENZNmt/const_nENZNm  
-			sINP % NPOOL % ENZNm = sINP % CPOOL % ENZNm/sINI % CN_ENZM
+			rRead = sINP(i) % MNPOOL % NH4 + sINP(i) % MNPOOL % NO3 + sINP(i) % MNPOOL % NO2 &
+				  + sINP(i) % MNPOOL % NO + sINP(i) % MNPOOL % N2O + sINP(i) % MNPOOL % N2
+			rRead = rRead/(sum(sINP(i) % NPOOL % POM) + sINP(i) % NPOOL % MOM)
+			sINP(i) % CPOOL % ENZNmt = rRead*(sum(sINP(i) % CPOOL % ENZP) + sINP(i) % CPOOL % ENZM)
+			sINP(i) % CPOOL % ENZNm = sINP(i) % CPOOL % ENZNmt/const_nENZNm  
+			sINP(i) % NPOOL % ENZNm = sINP(i) % CPOOL % ENZNm/sINI % CN_ENZM
 			
-			CALL subMEND_CPOOL_UPDATE1(sINP % CPOOL)  !!2019-04-28
-			CALL subMEND_NPOOL_UPDATE1(sINP % NPOOL, sINP % MNPOOL)
-			CALL subMEND_CN_UPDATE(sINP % CPOOL, sINP % NPOOL, sINP%MNPOOL, sINP % CN)
+			CALL subMEND_CPOOL_UPDATE1(sINP(i) % CPOOL)  !!2019-04-28
+			CALL subMEND_NPOOL_UPDATE1(sINP(i) % NPOOL, sINP(i) % MNPOOL)
+			CALL subMEND_CN_UPDATE(sINP(i) % CPOOL, sINP(i) % NPOOL, sINP(i)%MNPOOL, sINP(i) % CN)
 			!!COMPUTE CN_LITT(3), CN_WOOD(2), CN_ROOT(3)
 			rCN_LIG2LAB = sINI%dINI(26)
 
@@ -209,7 +209,7 @@ SUBROUTINE subMEND_INI(sINI)
 			sINI % CN_ROOT(2) = const_CN_Cellulose
 
 	!        sINI % CN_LITT(1) = frac(1)/(1.D0/sINI%CN_LITT_avg - frac(3)/sINI % CN_LITT(3) - frac(2)/sINI % CN_LITT(2))
-			frac = sINI%SIN_frac
+			frac = sINI%SIN_frac(i,:)
 			sINI % CN_LITT(3) = (frac(1)/rCN_LIG2LAB + frac(3))/(1.D0/sINI%CN_LITT_avg - frac(2)/sINI % CN_LITT(2))
 			sINI % CN_LITT(1) = sINI % CN_LITT(3)*rCN_LIG2LAB
 
@@ -231,7 +231,8 @@ SUBROUTINE subMEND_INI(sINI)
 	!        frac = sINI%SIN_other(2,:)/sum(sINI%SIN_other(2,:))
 			sINI % CN_ROOT(3) = (frac(1)/rCN_LIG2LAB + frac(3))/(1.D0/sINI%CN_ROOT_avg - frac(2)/sINI % CN_ROOT(2))
 			sINI % CN_ROOT(1) = sINI % CN_ROOT(3)*rCN_LIG2LAB
-    end do    
+    END IF 
+	end do    
 !!! moved to MEND_IN.F90, because it will result in SIN_NH4 or SIN_NO3 divided by soilDepth repeatedly during multiple runs (e.g., parameter optimization) 
 !!!----------------------------------------------------------------------------------------------        
 !!!        sINI%SIN_NH4 = sINI%SIN_NH4/sINI%soilDepth  !!convert [mg N/cm2/h] to [mg N/cm3/h]
@@ -244,7 +245,7 @@ SUBROUTINE subMEND_INI(sINI)
 !        print*,sINI % CN_WOOD
 !        print*,sINI % CN_ROOT
 !        print*,"debug"
-    END IF !!IF(.not.sINI%Carbon_only)
+    !!IF(.not.sINI%Carbon_only)
 !!     END TYPE sMEND_INP
 
 !!ISOTOPE:
@@ -310,8 +311,11 @@ SUBROUTINE subMEND_INI(sINI)
     if (sINI % iModel .eq. 0) then !output results for model simulation
 !        write(sINI%iFout_VAR_hour, '(i10,13e20.3,13e20.3,13e20.3)') &
 !                    0, sINP % CPOOL,sINP % CPOOLI(1),sINP % CPOOLI(2)
-        write(sINI%iFout_VAR_hour, '(i10,200e20.3)') &
-                    0, sINP % CPOOL, sINP%MNPOOL, sINP%NPOOL, sINP%CN !!,sINP % CPOOLI(1),sINP % CPOOLI(2)
+        write(sINI%iFout_VAR_hour, '(i10,500e20.3)') &
+                    0, (sINP(i) % CPOOL, i=1,const_layerNum),&
+					(sINP(i)%MNPOOL,i=1,const_layerNum),&
+					(sINP(i)%NPOOL,i=1,const_layerNum),&
+					(sINP(i)%CN,i=1,const_layerNum) !!,sINP % CPOOLI(1),sINP % CPOOLI(2)
     end if
 
 
@@ -443,10 +447,9 @@ END !!SUBROUTINE subMEND_POOL_UPDATE1(CPOOL)
 REAL(8) function fMEND_OBJ(xx, sPAR, sINI, sOUT)
 !    USE MOD_MEND
     !!ARGUMENTS:
-    TYPE(sMEND_PAR), intent(inout) :: sPAR
+    TYPE(sMEND_PAR), intent(inout), DIMENSION(const_layerNum):: sPAR
     TYPE(sMEND_INI), intent(inOut) :: sINI
-    TYPE(sMEND_OUT),DIMENSION(:), ALLOCATABLE , intent(inOut) :: sOUT
-	ALLOCATE(sOUT(const_layerNum))
+    TYPE(sMEND_OUT), intent(inOut),DIMENSION(const_layerNum)  :: sOUT
     REAL(8)        , intent(in)    :: xx(sINI%nPar)
     
     !!LCOAL VARIABLES:
@@ -547,24 +550,28 @@ SUBROUTINE subMEND_output(sDate,ihr, sPAR, sINI, sOUT)
 !    USE MOD_MEND
 !!Hourly output for all state variables and fluxes
     !!ARGUMENTS:
-    TYPE(sMEND_PAR), intent(in) :: sPAR
+    TYPE(sMEND_PAR), intent(in),DIMENSION(const_layerNum):: sPAR
     TYPE(sMEND_INI), intent(in) :: sINI
-    TYPE(sMEND_OUT), intent(in) :: sOUT
+    TYPE(sMEND_OUT), intent(in), DIMENSION(const_layerNum) :: sOUT
     CHARACTER(LEN=8),intent(in) :: sDate
     INTEGER,         intent(in) :: ihr
     
     !!LOCAL VARIABLES:
     CHARACTER(LEN=2)  str2
     CHARACTER(LEN=10) sDateHr
+	INTEGER i
     
     CALL sInt2Str(ihr,2,str2)
     sDateHr = sDate//str2
 !    if (sINI%iModel .eq. 0) then
 !    write(sINI%iFout_VAR_hour, '(A10,13e20.3,13e20.3,13e20.3)') &
 !        sDateHr, sOUT % CPOOL,sOUT % CPOOLI(1),sOUT % CPOOLI(2)
-    write(sINI%iFout_VAR_hour, '(A10,200e20.6)') sDateHr, sOUT % CPOOL, sOUT%MNPOOL, sOUT%NPOOL, sOUT%CN !!,sOUT % CPOOLI(1),sOUT % CPOOLI(2)    
-    write(sINI%iFout_FLX_hour, '(A10,200e20.6)') sDateHr, sOUT % CFLUX, sOUT%MNFLUX, sOUT%NFLUX
-    write(sINI%iFout_PAR_hour, '(A10,100e20.6)') sDateHr, sPAR
+    write(sINI%iFout_VAR_hour, '(A10,200e20.6)') sDateHr, (sOUT(i) % CPOOL, i=1,const_layerNum),&
+	(sOUT(i)%MNPOOL,i=1,const_layerNum), (sOUT(i)%NPOOL,i=1,const_layerNum), &
+	(sOUT(i)%CN,i=1,const_layerNum) !!,sOUT % CPOOLI(1),sOUT % CPOOLI(2)    
+    write(sINI%iFout_FLX_hour, '(A10,200e20.6)') sDateHr, (sOUT(i) % CFLUX,i=1,const_layerNum),&
+	(sOUT(i)%MNFLUX,i=1,const_layerNum), (sOUT(i)%NFLUX,i=1,const_layerNum)
+    write(sINI%iFout_PAR_hour, '(A10,100e20.6)') sDateHr, (sPAR(i), i=1,const_layerNum)
 !    end if
 END !!subroutine subMEND_output
 
@@ -575,121 +582,122 @@ SUBROUTINE subMEND_output_rate(sDate,ihr, sINI, sPAR, sINP, sOUT)
 !!"Hour","kPOM1","kPOM2","kMOM","kDOM","kMB","phi","rMBA"
     !!ARGUMENTS:
     TYPE(sMEND_INI), intent(in) :: sINI
-    TYPE(sMEND_PAR), intent(in) :: sPAR
-    TYPE(sMEND_INP), intent(in) :: sINP
-    TYPE(sMEND_OUT), intent(in) :: sOUT   
+    TYPE(sMEND_PAR), intent(in) ,DIMENSION(const_layerNum):: sPAR
+    TYPE(sMEND_INP), intent(in), DIMENSION(const_layerNum) :: sINP
+    TYPE(sMEND_OUT), intent(in), DIMENSION(const_layerNum) :: sOUT   
     CHARACTER(LEN=8),intent(in) :: sDate
     INTEGER,         intent(in) :: ihr
     
     !!LOCAL VARIABLES 
-    REAL(8) kSOM           !!Equivalent 1st-order decomposition rate; k=Vd*ENZP/(POM + Ks)
-    REAL(8) kPOM1           !!Equivalent 1st-order decomposition rate; k=Vd*ENZP/(POM + Ks)
-    REAL(8) kPOM2           !!Equivalent 1st-order decomposition rate; k=Vd*ENZP/(POM + Ks)
-    REAL(8) kPOM           !!Equivalent 1st-order decomposition rate; k=Vd*ENZP/(POM + Ks)
-    REAL(8) kMOM            !!Equivalent 1st-order decomposition rate; k=MOMdec/(MOM+QOM)
-    REAL(8) kQOM            !!Equivalent 1st-order decomposition rate; k=Vd*ENZM/(QOM + Ks)
-    REAL(8) kDOM            !!Equivalent 1st-order turnover rate of DOM; k=[(Vg+Vm)/Yg]*MB/(DOM + Ks)
-    REAL(8) kMBa            !!Equivalent 1st-order turnover rate of Active Mcirobes; k=respiration_rate + mortality_rate+Enzyme_production_rate
-    REAL(8) kMBa_in         !!Equivalent 1st-order assimilation rate of active microbes 
-    REAL(8) kMBd            !!Equivalent 1st-order turnover rate of dormant microbes
-    REAL(8) kMBd_in         !!Equivalent 1st-order microbial dormancy rate 
-    REAL(8) kMB             !!Equivalent 1st-order turnover rate of microbes
-    REAL(8) kMB_in          !!Equivalent 1st-order assimilation rate of total microbes
-    REAL(8) phi             !!DOM saturation level; phi=DOM/(DOM+Ks)
-    REAL(8) rMBa            !!Active Fraction of Microbes, r=MBA/MB
-    REAL(8) CUE             !!Apparent Microbial Carbon Use Efficiency, CUE=[DOM_to_MBA - CO2_gmo]/DOM_to_MBA
-    REAL(8) NUE             !!Apparent Nitrogen Use Efficiency, NUE=YgN
-    REAL(8) rNH4            !! = NH4/NH4tot
+    REAL(8) kSOM(const_layerNum)           !!Equivalent 1st-order decomposition rate; k=Vd*ENZP/(POM + Ks)
+    REAL(8) kPOM1(const_layerNum)           !!Equivalent 1st-order decomposition rate; k=Vd*ENZP/(POM + Ks)
+    REAL(8) kPOM2(const_layerNum)           !!Equivalent 1st-order decomposition rate; k=Vd*ENZP/(POM + Ks)
+    REAL(8) kPOM(const_layerNum)           !!Equivalent 1st-order decomposition rate; k=Vd*ENZP/(POM + Ks)
+    REAL(8) kMOM(const_layerNum)            !!Equivalent 1st-order decomposition rate; k=MOMdec/(MOM+QOM)
+    REAL(8) kQOM(const_layerNum)           !!Equivalent 1st-order decomposition rate; k=Vd*ENZM/(QOM + Ks)
+    REAL(8) kDOM(const_layerNum)            !!Equivalent 1st-order turnover rate of DOM; k=[(Vg+Vm)/Yg]*MB/(DOM + Ks)
+    REAL(8) kMBa(const_layerNum)            !!Equivalent 1st-order turnover rate of Active Mcirobes; k=respiration_rate + mortality_rate+Enzyme_production_rate
+    REAL(8) kMBa_in(const_layerNum)         !!Equivalent 1st-order assimilation rate of active microbes 
+    REAL(8) kMBd(const_layerNum)            !!Equivalent 1st-order turnover rate of dormant microbes
+    REAL(8) kMBd_in(const_layerNum)         !!Equivalent 1st-order microbial dormancy rate 
+    REAL(8) kMB(const_layerNum)             !!Equivalent 1st-order turnover rate of microbes
+    REAL(8) kMB_in(const_layerNum)          !!Equivalent 1st-order assimilation rate of total microbes
+    REAL(8) phi(const_layerNum)             !!DOM saturation level; phi=DOM/(DOM+Ks)
+    REAL(8) rMBa(const_layerNum)            !!Active Fraction of Microbes, r=MBA/MB
+    REAL(8) CUE(const_layerNum)             !!Apparent Microbial Carbon Use Efficiency, CUE=[DOM_to_MBA - CO2_gmo]/DOM_to_MBA
+    REAL(8) NUE(const_layerNum)             !!Apparent Nitrogen Use Efficiency, NUE=YgN
+    REAL(8) rNH4(const_layerNum)            !! = NH4/NH4tot
     
-    REAL(8) EA_POM(const_nPOM) !!Eyzyme Activity = Vmax * Enzyme Concentration
-    REAL(8) EA_MOM
-    REAL(8) EA_NFix
-    REAL(8) EA_Nit
-    REAL(8) EA_Denit(const_nDenit)
+    REAL(8) EA_POM(const_layerNum,const_nPOM) !!Eyzyme Activity = Vmax * Enzyme Concentration
+    REAL(8) EA_MOM(const_layerNum)
+    REAL(8) EA_NFix(const_layerNum)
+    REAL(8) EA_Nit(const_layerNum)
+    REAL(8) EA_Denit(const_layerNum,const_nDenit)
     
-    REAL(8) kNFix           !!Equivalent 1st-order N Fixation rate = Flux/N2
-    REAL(8) kNit            !!Equivalent 1st-order Nitrification rate = Flux/NH4
-    REAL(8) kDenit(const_nDenit)    !!Equivalent 1st-order Denitrification rate = Flux/[NO3 or NO2 or NO or N2O]
-    
+    REAL(8) kNFix(const_layerNum)           !!Equivalent 1st-order N Fixation rate = Flux/N2
+    REAL(8) kNit(const_layerNum)            !!Equivalent 1st-order Nitrification rate = Flux/NH4
+    REAL(8) kDenit(const_layerNum,const_nDenit)    !!Equivalent 1st-order Denitrification rate = Flux/[NO3 or NO2 or NO or N2O]
+    INTEGER i
     
     CHARACTER(LEN=2)  str2
     CHARACTER(LEN=10) sDateHr
     
     CALL sInt2Str(ihr,2,str2)
     sDateHr = sDate//str2
-    
-    phi     = sINP%CPOOL%DOM/(sPAR%KsDOM+sINP%CPOOL%DOM)
-    rMBa    = sINP%CPOOL%MBA/sINP%CPOOL%MB
-    kDOM    = (sPAR%Vg + sPAR%Vm)/sPAR%Yg*sINP%CPOOL%MBA/(sPAR%KsDOM+sINP%CPOOL%DOM)
-    kMBa    = (sPAR%Vg + sPAR%Vm)*(1.D0/sPAR%Yg - 1.D0)*phi &
-            + sPAR%rMORT + (sPAR%pENZP+sPAR%pENZM) * sPAR%Vm 
-    kMBa_in = (sPAR%Vg + sPAR%Vm)/sPAR%Yg*phi + sOUT%CFLUX%MBD_to_MBA/max(1.0D-20,sINP%CPOOL%MBA)
-    kMBd_in = sOUT%CFLUX%MBA_to_MBD/sINP%CPOOL%MBD
-    kMBd    = (sOUT%CFLUX%MBD_to_MBA + sOUT%MNFLUX%CO2_maintn_MBD)/sINP%CPOOL%MBD
-    kMB     = (sOUT%MNFLUX%CO2_gm + sOUT%CFLUX%MBA_PM)/sINP%CPOOL%MB
-    kMB_in  = sOUT%CFLUX%DOM_to_MBA/sINP%CPOOL%MB  
-    if (sOUT%CFLUX%DOM_to_MBA > 1.0D-20) then
-        CUE = (sOUT%CFLUX%DOM_to_MBA - sOUT%MNFLUX%CO2_gmo)/sOUT%CFLUX%DOM_to_MBA
-    else
-        CUE = 0.D0
-    end if
-    NUE     = sPAR%YgN
-    rNH4    = sOUT%MNPOOL%NH4/sOUT%MNPOOL%NH4tot
-    
-    SELECT CASE (sINI%iKinetics)
-        CASE (1,11)  !!First Order
-            kPOM1 = sPAR%VdPOM(1)
-            kPOM2 = sPAR%VdPOM(2) 
-            kMOM = sPAR%VdMOM
-            kQOM = kMOM
-        CASE (2)  !!Second Order
-            kPOM1 = sPAR%VdPOM(1)*sINP%CPOOL%ENZP(1)
-            kPOM2 = sPAR%VdPOM(2)*sINP%CPOOL%ENZP(2)
-            kMOM = sPAR%VdMOM*sINP%CPOOL%ENZM
-            kQOM = kMOM
-        CASE DEFAULT !!M-M Kinetics, iType = 0, 10
-            kSOM  = (sum(sOUT%CFLUX%POMdec_to_DOM) + sOUT%CFLUX%MOMdec)/(sINP%CPOOL%POMT + sINP%CPOOL%MOMT)
-            kPOM  = sum(sOUT%CFLUX%POMdec)/sINP%CPOOL%POMT 
-            kPOM1 = sPAR%VdPOM(1)*sINP%CPOOL%ENZP(1)/(sPAR%KsPOM(1)+sINP%CPOOL%POM(1)) 
-            kPOM2 = sPAR%VdPOM(2)*sINP%CPOOL%ENZP(2)/(sPAR%KsPOM(2)+sINP%CPOOL%POM(2)) 
-            kMOM  = sOUT%CFLUX%MOMdec/sINP%CPOOL%MOMT
-            kQOM  = sPAR%VdMOM*sINP%CPOOL%ENZM/(sPAR%KsMOM+sINP%CPOOL%QOM)   
-            
-            EA_POM = sPAR%VdPOM*sINP%CPOOL%ENZP
-            EA_MOM = sPAR%VdMOM*sINP%CPOOL%ENZM
-            EA_NFix = sPAR%VNif*sINP%CPOOL%ENZNM(1)
-            EA_Nit = sPAR%VNit*sINP%CPOOL%ENZNM(2)
-            EA_Denit(1:const_nDenit) = sPAR%VDenit(1:const_nDenit)*sINP%CPOOL%ENZNM(3:(const_nDenit+2))
-            
-            kNFix = sOUT%MNFLUX%NFix/max(1D-20,sINP%MNPOOL%N2)
-            kNit  = sOUT%MNFLUX%Nitrif/max(1D-20,sINP%MNPOOL%NH4tot)
-            kDenit(1)  = sOUT%MNFLUX%Denit(1)/max(1D-20,sINP%MNPOOL%NO3)
-            kDenit(2)  = sOUT%MNFLUX%Denit(2)/max(1D-20,sINP%MNPOOL%NO2)
-            kDenit(3)  = sOUT%MNFLUX%Denit(3)/max(1D-20,sINP%MNPOOL%NO)
-            kDenit(4)  = sOUT%MNFLUX%Denit(4)/max(1D-20,sINP%MNPOOL%N2O)
-            
-    END SELECT
+    do i=1, const_layerNum
+		phi(i)     = sINP(i)%CPOOL%DOM/(sPAR(i)%KsDOM+sINP(i)%CPOOL%DOM)
+		rMBa(i)    = sINP(i)%CPOOL%MBA/sINP(i)%CPOOL%MB
+		kDOM(i)    = (sPAR(i)%Vg + sPAR(i)%Vm)/sPAR(i)%Yg*sINP(i)%CPOOL%MBA/(sPAR(i)%KsDOM+sINP(i)%CPOOL%DOM)
+		kMBa(i)    = (sPAR(i)%Vg + sPAR(i)%Vm)*(1.D0/sPAR(i)%Yg - 1.D0)*phi(i) &
+				+ sPAR(i)%rMORT + (sPAR(i)%pENZP+sPAR(i)%pENZM) * sPAR(i)%Vm 
+		kMBa_in(i) = (sPAR(i)%Vg + sPAR(i)%Vm)/sPAR(i)%Yg*phi(i) + sOUT(i)%CFLUX%MBD_to_MBA/max(1.0D-20,sINP(i)%CPOOL%MBA)
+		kMBd_in(i) = sOUT(i)%CFLUX%MBA_to_MBD/sINP(i)%CPOOL%MBD
+		kMBd(i)    = (sOUT(i)%CFLUX%MBD_to_MBA + sOUT(i)%MNFLUX%CO2_maintn_MBD)/sINP(i)%CPOOL%MBD
+		kMB(i)     = (sOUT(i)%MNFLUX%CO2_gm + sOUT(i)%CFLUX%MBA_PM)/sINP(i)%CPOOL%MB
+		kMB_in(i)  = sOUT(i)%CFLUX%DOM_to_MBA/sINP(i)%CPOOL%MB  
+		if (sOUT(i)%CFLUX%DOM_to_MBA > 1.0D-20) then
+			CUE(i) = (sOUT(i)%CFLUX%DOM_to_MBA - sOUT(i)%MNFLUX%CO2_gmo)/sOUT(i)%CFLUX%DOM_to_MBA
+		else
+			CUE(i) = 0.D0
+		end if
+		NUE(i)     = sPAR(i)%YgN
+		rNH4 (i)   = sOUT(i)%MNPOOL%NH4/sOUT(i)%MNPOOL%NH4tot
+		
+		SELECT CASE (sINI%iKinetics)
+			CASE (1,11)  !!First Order
+				kPOM1(i) = sPAR(i)%VdPOM(1)
+				kPOM2(i) = sPAR(i)%VdPOM(2) 
+				kMOM(i) = sPAR(i)%VdMOM
+				kQOM(i) = kMOM(i)
+			CASE (2)  !!Second Order
+				kPOM1(i) = sPAR(i)%VdPOM(1)*sINP(i)%CPOOL%ENZP(1)
+				kPOM2(i) = sPAR(i)%VdPOM(2)*sINP(i)%CPOOL%ENZP(2)
+				kMOM(i) = sPAR(i)%VdMOM*sINP(i)%CPOOL%ENZM
+				kQOM(i) = kMOM(i)
+			CASE DEFAULT !!M-M Kinetics, iType = 0, 10
+				kSOM(i)  = (sum(sOUT(i)%CFLUX%POMdec_to_DOM) + sOUT(i)%CFLUX%MOMdec)/(sINP(i)%CPOOL%POMT + sINP(i)%CPOOL%MOMT)
+				kPOM(i)  = sum(sOUT(i)%CFLUX%POMdec)/sINP(i)%CPOOL%POMT 
+				kPOM1(i) = sPAR(i)%VdPOM(1)*sINP(i)%CPOOL%ENZP(1)/(sPAR(i)%KsPOM(1)+sINP(i)%CPOOL%POM(1)) 
+				kPOM2(i) = sPAR(i)%VdPOM(2)*sINP(i)%CPOOL%ENZP(2)/(sPAR(i)%KsPOM(2)+sINP(i)%CPOOL%POM(2)) 
+				kMOM(i)  = sOUT(i)%CFLUX%MOMdec/sINP(i)%CPOOL%MOMT
+				kQOM(i)  = sPAR(i)%VdMOM*sINP(i)%CPOOL%ENZM/(sPAR(i)%KsMOM+sINP(i)%CPOOL%QOM)   
+				
+				EA_POM(i,:) = sPAR(i)%VdPOM*sINP(i)%CPOOL%ENZP
+				EA_MOM(i) = sPAR(i)%VdMOM*sINP(i)%CPOOL%ENZM
+				EA_NFix(i) = sPAR(i)%VNif*sINP(i)%CPOOL%ENZNM(1)
+				EA_Nit(i) = sPAR(i)%VNit*sINP(i)%CPOOL%ENZNM(2)
+				EA_Denit(i,1:const_nDenit) = sPAR(i)%VDenit(1:const_nDenit)*sINP(i)%CPOOL%ENZNM(3:(const_nDenit+2))
+				
+				kNFix(i) = sOUT(i)%MNFLUX%NFix/max(1D-20,sINP(i)%MNPOOL%N2)
+				kNit(i)  = sOUT(i)%MNFLUX%Nitrif/max(1D-20,sINP(i)%MNPOOL%NH4tot)
+				kDenit(i,1)  = sOUT(i)%MNFLUX%Denit(1)/max(1D-20,sINP(i)%MNPOOL%NO3)
+				kDenit(i,2)  = sOUT(i)%MNFLUX%Denit(2)/max(1D-20,sINP(i)%MNPOOL%NO2)
+				kDenit(i,3)  = sOUT(i)%MNFLUX%Denit(3)/max(1D-20,sINP(i)%MNPOOL%NO)
+				kDenit(i,4)  = sOUT(i)%MNFLUX%Denit(4)/max(1D-20,sINP(i)%MNPOOL%N2O)
+				
+		END SELECT
+	end do
 !    if (sINI%iModel .eq. 0) then
     write(sINI%iFout_rate_hour, '(A10,100e20.3)') &
             sDateHr, kSOM,kPOM1,kPOM2,kPOM,kMOM,kQOM,kDOM,kMBa,kMBa_in,kMBd,kMBd_in,kMB,kMB_in,&
             phi,rMBa, CUE, NUE,rNH4,sINI%fDOM,sINI%fNO3_Leaching,sINI%VNup_VG_GPPscaler,&
             EA_POM,EA_MOM,EA_NFix,EA_Nit,EA_Denit,kNFix,kNit,kDenit, &
-            sOUT%CPOOL%TM_err,sINP%CPOOL%TM,sOUT%CPOOL%TM,sOUT%CFLUX%TOTinp,sOUT%CFLUX%TOTout,&
-            sINP%tmp, sINP%SWC, sINP%SWP, sINP%pH
+            (sOUT(i)%CPOOL%TM_err,i=1,const_layerNum),sINP(i)%CPOOL%TM,(sOUT(i)%CPOOL%TM,i=1,const_layerNum),&
+			(sOUT(i)%CFLUX%TOTinp,i=1,const_layerNum),(sOUT(i)%CFLUX%TOTout,i=1,const_layerNum),&
+            (sINP(i)%tmp,i=1,const_layerNum), (sINP(i)%SWC,i=1,const_layerNum),&
+			(sINP(i)%SWP,i=1,const_layerNum), (sINP(i)%pH,i=1,const_layerNum)
 !    end if
 END !!subroutine subMEND_output_rate
 !-----------------------------------------------------------------------------
 SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
     !!ARGUMENTS:
-    TYPE(sMEND_PAR), intent(inout) :: sPAR
+    TYPE(sMEND_PAR), intent(inout),DIMENSION(const_layerNum) :: sPAR
     TYPE(sMEND_INI), intent(inout) :: sINI
-    TYPE(sMEND_OUT),DIMENSION(:), ALLOCATABLE , intent(inOut) :: sOUT
-	ALLOCATE(sOUT(const_layerNum))
+    TYPE(sMEND_OUT) , intent(inOut),DIMENSION(const_layerNum) :: sOUT
     REAL(8)        , intent(in)    :: xx(sINI%nPar)
     
     !!LOCAL VARIABLES:
-    TYPE(sMEND_INP),DIMENSION(:), ALLOCATABLE :: sINP  ! set another dimension as depth
-    ALLOCATE(sINP(const_layerNum))
+    TYPE(sMEND_INP),DIMENSION(const_layerNum) :: sINP  ! set another dimension as depth
     INTEGER*4 i, k, lay 
     INTEGER j, lp, jbeg,jend, tstep, ibeg, iend,iday
     INTEGER iFunc, iObs_time, iHour
@@ -823,27 +831,27 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
 	!!wgs: END
 					
 					sINP(lay)%GPP = sINI%SIN(k,lay)
-					sINP(lay)%SIN = sINI%SIN(k,lay)*sPAR%fINP
+					sINP(lay)%SIN = sINI%SIN(k,lay)*sPAR(lay)%fINP
 					sINP(lay)%tmp = sINI%STP(k,lay)
 					sINP(lay)%SWC = sINI%SWC(k,lay)
 					sINP(lay)%SWP = sINI%SWP(k,lay)
 					sINP(lay)%pH  = sINI%SpH(k,lay)
 					
 					if(sINI%iKinetics.eq.10) then
-						sINI%fDOM = fracDOM(sINP%SWC, sINI%porosity)  !! DOM = DOMT * fDOM
+						sINI%fDOM = fracDOM(sINP(lay)%SWC, sINI%porosity)  !! DOM = DOMT * fDOM
 					else
 						sINI%fDOM = 1.d0  !!DOM = DOMT
 					end if
 					
 					!! [2019-05-10] "dexp" method works better
 					if(sINI%iGPPscaler.eq.0) then
-						sINI%VNup_VG_GPPscaler = dexp((sINP(lay)%GPP/sINI%GPPref - 1.d0) * sPAR%bNup_VG)
+						sINI%VNup_VG_GPPscaler = dexp((sINP(lay)%GPP/sINI%GPPref - 1.d0) * sPAR(lay)%bNup_VG)
 					else
-						sINI%VNup_VG_GPPscaler = (sINP(lay)%GPP/sINI%GPPref) ** sPAR%bNup_VG 
+						sINI%VNup_VG_GPPscaler = (sINP(lay)%GPP/sINI%GPPref) ** sPAR(lay)%bNup_VG 
 					end if
 						
 					sINI%fNO3_Leaching = fracNO3_Leaching(sINP(lay)%tmp, sINP(lay)%SWC,sINI%porosity,sINI%SWCFC,sINI%Ksat,sINI%Lambda,&
-														  sPAR%rNleach,sINI%soilDepth,1.d0)
+														  sPAR(lay)%rNleach,sINI%soilDepth,1.d0)
 					
 					!!External INPUT: BEGIN
 					sOUT(lay) % CFLUX % POMadd(1) = sINP(lay)%SIN * sINI%SIN_frac(lay,1) + sINI%SIN_other(1,1)  !![mg POM/g soil/h], inputs to POM
@@ -858,20 +866,20 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
 			!        write(*,*)i,sINP % CADD % POMadd(1:2),sINP % CADD % DOMadd
 					
 					IF(.NOT.sINI%Carbon_only) THEN
-						sOUT % NFLUX % POMadd(1) = sINP%SIN * sINI%SIN_frac(1)/sINI%CN_LITT(1) + sINI%SIN_other(1,1)/sINI%CN_WOOD(1)  !![mg POM/g soil/h], inputs to POM
-						sOUT % NFLUX % POMadd(2) = sINP%SIN * sINI%SIN_frac(2)/sINI%CN_LITT(2) + sINI%SIN_other(1,2)/sINI%CN_WOOD(2)
-						sOUT % NFLUX % DOMadd    = sINP%SIN * sINI%SIN_frac(3)/sINI%CN_LITT(3) + sINI%SIN_other(1,3)/sINI%CN_WOOD(3)  !![mg DOM/g soil/h], inputs to DOM
+						sOUT(lay) % NFLUX % POMadd(1) = sINP(lay)%SIN * sINI%SIN_frac(lay,1)/sINI%CN_LITT(1) + sINI%SIN_other(1,1)/sINI%CN_WOOD(1)  !![mg POM/g soil/h], inputs to POM
+						sOUT(lay) % NFLUX % POMadd(2) = sINP(lay)%SIN * sINI%SIN_frac(lay,2)/sINI%CN_LITT(2) + sINI%SIN_other(1,2)/sINI%CN_WOOD(2)
+						sOUT(lay) % NFLUX % DOMadd    = sINP(lay)%SIN * sINI%SIN_frac(lay,3)/sINI%CN_LITT(3) + sINI%SIN_other(1,3)/sINI%CN_WOOD(3)  !![mg DOM/g soil/h], inputs to DOM
 						
 						if(i.ge.jbeg.and.i.le.jend) then
-							sOUT%NFLUX%POMadd(1) = sOUT%NFLUX%POMadd(1)+sINI%SIN_other(2,1)/DBLE(jend-jbeg+1)/sINI%CN_ROOT(1)
-							sOUT%NFLUX%POMadd(2) = sOUT%NFLUX%POMadd(2)+sINI%SIN_other(2,2)/DBLE(jend-jbeg+1)/sINI%CN_ROOT(2)
-							sOUT%NFLUX%DOMadd    = sOUT%NFLUX%DOMadd   +sINI%SIN_other(2,3)/DBLE(jend-jbeg+1)/sINI%CN_ROOT(3)
+							sOUT(lay)%NFLUX%POMadd(1) = sOUT(lay)%NFLUX%POMadd(1)+sINI%SIN_other(2,1)/DBLE(jend-jbeg+1)/sINI%CN_ROOT(1)
+							sOUT(lay)%NFLUX%POMadd(2) = sOUT(lay)%NFLUX%POMadd(2)+sINI%SIN_other(2,2)/DBLE(jend-jbeg+1)/sINI%CN_ROOT(2)
+							sOUT(lay)%NFLUX%DOMadd    = sOUT(lay)%NFLUX%DOMadd   +sINI%SIN_other(2,3)/DBLE(jend-jbeg+1)/sINI%CN_ROOT(3)
 						end if
 						
-						sOUT%MNFLUX%NH4_dep = sINI%SIN_NH4(k)
-						sOUT%MNFLUX%NO3_dep = sINI%SIN_NO3(k)
-						if(sOUT%MNFLUX%NH4_dep.lt.1D-10 .or. sOUT%MNFLUX%NO3_dep .lt. 1D-10) then
-							write(*,*)"Ndep=",iday,sOUT%MNFLUX%NH4_dep, sOUT%MNFLUX%NO3_dep 
+						sOUT(lay)%MNFLUX%NH4_dep = sINI%SIN_NH4(k)
+						sOUT(lay)%MNFLUX%NO3_dep = sINI%SIN_NO3(k)
+						if(sOUT(lay)%MNFLUX%NH4_dep.lt.1D-10 .or. sOUT(lay)%MNFLUX%NO3_dep .lt. 1D-10) then
+							write(*,*)"Ndep=",iday,sOUT(lay)%MNFLUX%NH4_dep, sOUT(lay)%MNFLUX%NO3_dep 
 							stop
 						end if
 	!                    write(*,*)iday,k,sINI%SIN_NH4(k),sINI%SIN_NO3(k),sOUT%MNFLUX%NH4_dep,sOUT%MNFLUX%NO3_dep
@@ -886,7 +894,7 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
 						iJday = iJulianDay(iyr,imo,ida)
 						j = (iJday - 1)*24 + lp
 						sINP%GPP = SIN_mean(j)
-						SIN0 = SIN_mean(j)*sPAR%fINP
+						SIN0 = SIN_mean(j)*sPAR(lay)%fINP
 						STP0 = STP_mean(j)
 						SWC0 = SWC_mean(j)
 						SWP0 = SWP_mean(j)
@@ -897,7 +905,7 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
 						j = mod(k,sINI%nHour)   !! mod(k,sINI%nHour)+1  
 						if(j==0) j=sINI%nHour
 						sINP(lay)%GPP = sINI%SIN(lay,j)
-						SIN0 = sINI%SIN(lay,j)*sPAR%fINP
+						SIN0 = sINI%SIN(lay,j)*sPAR(lay)%fINP
 						STP0 = sINI%STP(lay,j)
 						SWC0 = sINI%SWC(lay,j)
 						SWP0 = sINI%SWP(lay,j)
@@ -912,7 +920,7 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
 					sINP(lay)%pH  = SpH0
 					
 					if(sINI%iKinetics.eq.10) then
-						sINI%fDOM = fracDOM(sINP%SWC, sINI%porosity)  !! DOM = DOMT * fDOM
+						sINI%fDOM = fracDOM(sINP(lay)%SWC, sINI%porosity)  !! DOM = DOMT * fDOM
 					else
 						sINI%fDOM = 1.d0  !!DOM = DOMT
 					end if
@@ -925,12 +933,12 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
 					sINP%tmp = STP0 + (iyr - iyr_end_all)*sINI%STP_delta
 					
 					if(sINI%iGPPscaler.eq.0) then
-						sINI%VNup_VG_GPPscaler = dexp((sINP(lay)%GPP/sINI%GPPref - 1.d0) * sPAR%bNup_VG)
+						sINI%VNup_VG_GPPscaler = dexp((sINP(lay)%GPP/sINI%GPPref - 1.d0) * sPAR(lay)%bNup_VG)
 					else
-						sINI%VNup_VG_GPPscaler = (sINP(lay)%GPP/sINI%GPPref) ** sPAR%bNup_VG 
+						sINI%VNup_VG_GPPscaler = (sINP(lay)%GPP/sINI%GPPref) ** sPAR(lay)%bNup_VG 
 					end if
 					sINI%fNO3_Leaching = fracNO3_Leaching(sINP(lay)%tmp,sINP(lay)%SWC,sINI%porosity,sINI%SWCFC,sINI%Ksat,sINI%Lambda,&
-														  sPAR%rNleach, sINI%soilDepth,1.d0)
+														  sPAR(lay)%rNleach, sINI%soilDepth,1.d0)
 	!                sINP%SWC = sINI%SWC(j) + (iyr - iyr_end_all)*sINI%delta_SWC
 	!                sINP%SWC = sINI%SWC(j)*(sINI%delta_SWC**(iyr - iyr_end_all))
 	!                rRead(1) = (0.5d0 + 1d0/(1d0 + dexp(sINI%SWC_logis*(iyr - iyr_end_all))))
@@ -952,7 +960,7 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
 					sINP(lay)%SWC = SWC0*rRead(1) 
 	!                write(*,*)'SWC_logis = ',rRead(1),iyr,sINI%SWC(j),sINP%SWC
 					
-					sINP%SWP = fSWC2SWP(sINP%SWC,SINI % waterRetention_vg(1),SINI % waterRetention_vg(2),&
+					sINP(lay)%SWP = fSWC2SWP(sINP(lay)%SWC,SINI % waterRetention_vg(1),SINI % waterRetention_vg(2),&
 												 SINI % waterRetention_vg(3),SINI % waterRetention_vg(4),const_SWPmin)
 					
 					!!External INPUT: BEGIN; assume root input = leaf litter input
@@ -966,9 +974,9 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
 	!                write(*,*)'SIN_logis = ',rRead(1), iyr, sINI%SIN_logis
 					
 					!!wgs[9/27/2016]: currently only assumes linear increase in DOM fraction, needs to be modified 
-					rRead(3) = min(sINI%SIN_frac(3)*2d0, sINI%SIN_frac(3) + sINI%SIN_logis(4)*(iyr - iyr_end_all))  !! new DOM fraction
-					rRead(1) = sINI%SIN_frac(1)/(sINI%SIN_frac(1) + sINI%SIN_frac(2)) * (1d0 - rRead(3))             !! new POM1 fraction
-					rRead(2) = sINI%SIN_frac(2)/(sINI%SIN_frac(1) + sINI%SIN_frac(2)) * (1d0 - rRead(3))             !! new POM2 fraction
+					rRead(3) = min(sINI%SIN_frac(lay,3)*2d0, sINI%SIN_frac(lay,3) + sINI%SIN_logis(4)*(iyr - iyr_end_all))  !! new DOM fraction
+					rRead(1) = sINI%SIN_frac(lay,1)/(sINI%SIN_frac(lay,1) + sINI%SIN_frac(lay,2)) * (1d0 - rRead(3))             !! new POM1 fraction
+					rRead(2) = sINI%SIN_frac(lay,2)/(sINI%SIN_frac(lay,1) + sINI%SIN_frac(lay,2)) * (1d0 - rRead(3))             !! new POM2 fraction
 					
 					sOUT(lay)%CFLUX%POMadd(1) = SIN0 * rRead(1) * sINI%SIN_Multiplier * rRead(5) !!+ sINI%SIN_other(1,1)  !![mg POM/g soil/h], inputs to POM
 					sOUT(lay)%CFLUX%POMadd(2) = SIN0 * rRead(2) * sINI%SIN_Multiplier * rRead(5) !!+ sINI%SIN_other(1,2)
@@ -976,12 +984,12 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
 					
 					
 					IF(.NOT.sINI%Carbon_only) THEN
-						sOUT%NFLUX%POMadd(1) = SIN0 * sINI%SIN_frac(1) * sINI%SIN_Multiplier/sINI%CN_LITT(1) !!+ sINI%SIN_other(1,1)  !![mg POM/g soil/h], inputs to POM
-						sOUT%NFLUX%POMadd(2) = SIN0 * sINI%SIN_frac(2) * sINI%SIN_Multiplier/sINI%CN_LITT(2) !!+ sINI%SIN_other(1,2)
-						sOUT%NFLUX%DOMadd    = SIN0 * sINI%SIN_frac(3) * sINI%SIN_Multiplier/sINI%CN_LITT(3)
+						sOUT(lay)%NFLUX%POMadd(1) = SIN0 * sINI%SIN_frac(lay,1) * sINI%SIN_Multiplier/sINI%CN_LITT(1) !!+ sINI%SIN_other(1,1)  !![mg POM/g soil/h], inputs to POM
+						sOUT(lay)%NFLUX%POMadd(2) = SIN0 * sINI%SIN_frac(lay,2) * sINI%SIN_Multiplier/sINI%CN_LITT(2) !!+ sINI%SIN_other(1,2)
+						sOUT(lay)%NFLUX%DOMadd    = SIN0 * sINI%SIN_frac(lay,3) * sINI%SIN_Multiplier/sINI%CN_LITT(3)
 						
-						sOUT%MNFLUX%NH4_dep = sINI%SIN_NH4(j)   !!TODO
-						sOUT%MNFLUX%NO3_dep = sINI%SIN_NO3(j)   !!TODO
+						sOUT(lay)%MNFLUX%NH4_dep = sINI%SIN_NH4(j)   !!TODO
+						sOUT(lay)%MNFLUX%NO3_dep = sINI%SIN_NO3(j)   !!TODO
 					END IF
 				end if
 			end do
@@ -995,13 +1003,14 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
             sINI%sINP = sINP
 			do lay=1,const_layerNum
 
-				CALL subMEND_PAR(xx, sPAR, sINI,lay)   !!modify parameter values by soil temperature, water potential, pH
-				CALL subMEND(xx, sPAR, sINI, sOUT,lay) !!MEND model 
-				if (sINI % iModel .eq. 0 .or. sINI % iModel .eq. 3) then !output results for model simulation
-					CALL subMEND_output_rate(sDate,lp, sINI, sPAR, sINP, sOUT)
-					CALL subMEND_output(sDate,lp, sPAR, sINI, sOUT)
-				end if
-			end do
+				CALL subMEND_PAR(xx, sPAR(lay), sINI,lay)   !!modify parameter values by soil temperature, water potential, pH and depth
+				CALL subMEND(xx, sPAR, sINI, sOUT,lay) !!MEND model
+			end do				
+			if (sINI % iModel .eq. 0 .or. sINI % iModel .eq. 3) then !output results for model simulation
+				CALL subMEND_output_rate(sDate,lp, sINI, sPAR, sINP, sOUT)
+				CALL subMEND_output(sDate,lp, sPAR, sINI, sOUT)
+			end if
+
             !!Extract output variables to compare with observations 
             CALL sOUT_OPT_h(sINI%nVARopt,24,lp,dSIM,sPAR,sOUT,sINI%VARopt_int)
             dSIM_h((iday-1)*24+lp,:) = dSIM(lp,:)   !!continuous hourly output
@@ -1111,13 +1120,13 @@ SUBROUTINE subMEND_RUN(xx, sPAR, sINI, sOUT)
 END !!subroutine subMEND_RUN
 !-----------------------------------------------------------------------------
 
-SUBROUTINE subMEND(xx, sPAR, sINI, sOUT_all,lay)
+SUBROUTINE subMEND(xx, sPAR_all, sINI, sOUT_all,lay)
     !model components 
 !    USE MOD_MEND
 !    IMPLICIT NONE
     !!ARGUMENTS:
     
-    TYPE(sMEND_PAR), intent(inout)  :: sPAR
+    TYPE(sMEND_PAR), intent(inout), DIMENSION(const_layerNum)  :: sPAR_all
     TYPE(sMEND_INI), intent(in)     :: sINI
     TYPE(sMEND_OUT), intent(inout)  , DIMENSION(const_layerNum):: sOUT_all 
     REAL(8)        , intent(in)     :: xx(sINI%nPar)  !!used in subMEND_PAR
@@ -1125,6 +1134,7 @@ SUBROUTINE subMEND(xx, sPAR, sINI, sOUT_all,lay)
     
     !!LOCAL VARIABLES:
     TYPE(sMEND_INP) sINP
+	TYPE(sMEND_PAR) sPAR
     TYPE(sMEND_OUT) sOUT
     TYPE(sMM_PAR) smmPAR
     TYPE(sMM_INP) smmINP
@@ -1142,8 +1152,9 @@ SUBROUTINE subMEND(xx, sPAR, sINI, sOUT_all,lay)
     
 !    ASSOCIATE(sINP => sINI%sINP) 
     frMBA_to_POM = (/0.1d0, 0.9d0/)  !! 10% entering POM_Oxidative, 90% entering POM_Hydrolytic
-    sINP = sINI(lay)%sINP
+    sINP = sINI%sINP(lay)
 	sOUT = sOUT_all(lay)
+	sPAR=sPAR_all(lay)
 !    write(*,'(a15,50d10.3)')"sINP%CPOOL=",sINP%CPOOL
     !compute initial total mass of the system 
 !    if(sINI%iKinetics.eq.10) then
@@ -1614,7 +1625,7 @@ IF(.NOT.sINI%Carbon_only) THEN
     sOUT%MNFLUX%Denit(4)      = sPAR%VDenit(4) * sINP%CPOOL%ENZNm(6) * sOUT%MNPOOL%N2O/(sPAR%KsDenit(4) + sOUT%MNPOOL%N2O)
     
 !    sOUT%MNFLUX%Denitrif    = sPAR%Vdenit * sOUT % MNPOOL % NO3
-    phi = 1.D0 - fO2_scalar(sINI%sINP%SWC,sINI%porosity) !!higher SWC, lower fO2_scalar, higher phi
+    phi = 1.D0 - fO2_scalar(sINI%sINP(lay)%SWC,sINI%porosity) !!higher SWC, lower fO2_scalar, higher phi
 !!!    sOUT%MNFLUX%Denitrif    = sOUT%MNFLUX%Denitrif + sOUT%MNFLUX%Nitrif*phi    !!Nitrifier DeNitrification !!sINI%sINP%SWC/sINI%porosity
     sOUT % MNPOOL % NH4     = sOUT % MNPOOL % NH4 + sOUT%MNFLUX%NFix - sOUT%MNFLUX%Nitrif
     sOUT % MNPOOL % NO3     = sOUT % MNPOOL % NO3 + sOUT%MNFLUX%Nitrif * (1.d0 - phi ) - sOUT%MNFLUX%Denit(1)
@@ -1682,11 +1693,11 @@ IF(.NOT.sINI%Carbon_only) THEN
     
     !! N-Gas diffusion (efflux) from soil to air
     sOUT%MNFLUX%NO_efflux = fGasEfflux("NO",sOUT%MNPOOL%NO, sINI%porosity, 0.5d0*sINI%soilDepth, sINI%altitude, &
-                            sINI%SWCFC, sINI%sINP%SWC, sINI%sINP%tmp, const_DiffAir0_NOx)
+                            sINI%SWCFC, sINI%sINP(lay)%SWC, sINI%sINP(lay)%tmp, const_DiffAir0_NOx)
     sOUT%MNFLUX%N2O_efflux = fGasEfflux("N2O",sOUT%MNPOOL%N2O, sINI%porosity, 0.5d0*sINI%soilDepth, sINI%altitude, &
-                            sINI%SWCFC, sINI%sINP%SWC, sINI%sINP%tmp, const_DiffAir0_NOx)
+                            sINI%SWCFC, sINI%sINP(lay)%SWC, sINI%sINP(lay)%tmp, const_DiffAir0_NOx)
     sOUT%MNFLUX%N2_efflux = fGasEfflux("N2",sOUT%MNPOOL%N2, sINI%porosity, 0.5d0*sINI%soilDepth, sINI%altitude, &
-                            sINI%SWCFC, sINI%sINP%SWC, sINI%sINP%tmp, const_DiffAir0_NOx)
+                            sINI%SWCFC, sINI%sINP(lay)%SWC, sINI%sINP(lay)%tmp, const_DiffAir0_NOx)
     
     sOUT%MNPOOL%NO = sOUT%MNPOOL%NO - sOUT%MNFLUX%NO_efflux
     sOUT%MNPOOL%N2O = sOUT%MNPOOL%N2O - sOUT%MNFLUX%N2O_efflux
@@ -1738,7 +1749,7 @@ IF(.NOT.sINI%Carbon_only) THEN
 END IF !!IF(.NOT.sINI%Carbon_only) 
     !!++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     sOUT_all(lay)=sOUT  ! store each output in each layer
-    
+    sPAR_all(lay)=sPAR	! store each output in each layer
 !    do j = 2, const_nISO !j = 1 for lightest isotope, e.g., C12
 !        !Isotopic components
 !
@@ -1894,10 +1905,10 @@ SUBROUTINE subMEND_PAR(xx, sPAR, sINI,lay)
     BIOME = trim(sINI%BIOME)
     SOM   = trim(sINI%SOM)
     
-    tp = sINI%sINP%tmp
-    wp = sINI%sINP%SWP
-    wfp = min(1.D0,sINI%sINP%SWC/sINI%porosity)
-    pH = sINI%sINP%pH
+    tp = sINI%sINP(lay)%tmp
+    wp = sINI%sINP(lay)%SWP
+    wfp = min(1.D0,sINI%sINP(lay)%SWC/sINI%porosity)
+    pH = sINI%sINP(lay)%pH
     
     !!sPARbase
     sPARbase%fRa        = xx(3)
@@ -1930,7 +1941,7 @@ SUBROUTINE subMEND_PAR(xx, sPAR, sINI,lay)
     sPARbase%KsDOM      = xx(19)
     sPARbase%Yg         = xx(20)
 !    sPARbase%Ygsl       = xx(21)  !!no Ygsl in sPAR
-	sPARbase%Ygdep		==xx(48)
+	sPARbase%Ygdep		=xx(48)    !! add a parameter for depth scaling factor of Yg
 	
     CUE_slope           = -1.D0*xx(21)
     sPARbase%Q10        = xx(22)  
@@ -2411,21 +2422,21 @@ REAL(8) function fTdep_CUE(T,Tref,slope,CUEref,lay,CUE_dep)
     !intercept: [-]
     !! parameter values: Wang et al. (2015), ISMEJ 
     !!ARGUMENTS:
-    REAL(8), intent(in):: T, Tref,slope,CUEref,lay,CUE_dep
+    REAL(8), intent(in):: T, Tref,slope,CUEref,CUE_dep
 !    REAL(8), PARAMETER :: Tref      = 0    !![degree C]
 !    REAL(8), PARAMETER :: slope     = -0.01
 !    REAL(8), PARAMETER :: intercept = 0.56  !! []
-    
+    INTEGER,intent(in)::lay
     !!LOCAL VARIABLES:
     REAL(8), PARAMETER:: CUEmax = 0.9D0
     REAL(8), PARAMETER:: CUEmin = 0.1D-1
     
-    fT_CUE = fT_Linear(T, Tref, slope, CUEref)
-	fT_CUE=fT_CUE * dexp((-lay+1D0)/CUE_dep))
-    if(fT_CUE.gt.CUEmax) then
-        fT_CUE = CUEmax
-    elseif(fT_CUE.lt.CUEmin) then
-        fT_CUE = CUEmin
+    fTdep_CUE = fT_Linear(T, Tref, slope, CUEref)
+	fTdep_CUE = fTdep_CUE * dexp((-lay+1D0)/CUE_dep)
+    if(fTdep_CUE.gt.CUEmax) then
+        fTdep_CUE = CUEmax
+    elseif(fTdep_CUE.lt.CUEmin) then
+        fTdep_CUE = CUEmin
     end if
     
     return
@@ -3382,75 +3393,75 @@ SUBROUTINE sOUT_OPT_h(nVAR,nHour,iHour,dSIM,sPAR,sOUT,VARopt_int)
     REAL(8), intent(out)    :: dSIM(nHour,nVAR)
 !    Real(8) CO2_ISO_inp  !!cumulative CO2 isotope (e.g., C14 or C13) at the beginning of the time-step
 !    REAL(8), intent(in)     :: vENZ(2)      !!specific ENZ activity, ligninase & cellulase
-    TYPE(sMEND_PAR),intent(in):: sPAR
-    TYPE(sMEND_OUT),intent(in):: sOUT
+    TYPE(sMEND_PAR),intent(in),DIMENSION(const_layerNum):: sPAR
+    TYPE(sMEND_OUT),intent(in),DIMENSION(const_layerNum):: sOUT
     
     !!LOCAL VARIABLES:
-    INTEGER j,k
+    INTEGER j,k,i
     
     do j = 1,nVAR
         k = VARopt_int(j,1)
         select case (k)  !!see "MEND.ini"
             case (1)    !!CO2, 1st obj = NSEC
-                dSIM(iHour,j) = sOUT%MNFLUX%CO2_gmo
+                dSIM(iHour,j) = sum([(sOUT(i)%MNFLUX%CO2_gmo,i=1,const_layerNum)])
             case (2)    !!CO2_ISO,e.g., C14_CO2
-                dSIM(iHour,j) = sOUT%MNFLUX%CO2_root
+                dSIM(iHour,j) = sum([(sOUT%MNFLUX%CO2_root,i=1,const_layerNum)])
 !                dSIM(iHour,j) = sOUT%CPOOLI(2)%CO2 - CO2_ISO_inp!!sINP%CPOOLI(2)%CO2
             case (3)    !!Rs: soil respiration
-                dSIM(iHour,j) = sOUT%MNFLUX%CO2_soil
+                dSIM(iHour,j) = sum([(sOUT%MNFLUX%CO2_soil,i=1,const_layerNum)])
             case (4)    !!MBC
-                dSIM(iHour,j) = sOUT%CPOOL%MB
+                dSIM(iHour,j) = sOUT(1)%CPOOL%MB
             case (5)    !!CO2, 2nd obj = AVGr 
 !                dSIM(iHour,j) = sOUT%CPOOL%DOM
-                dSIM(iHour,j) = sOUT%MNFLUX%CO2_gmo
+                dSIM(iHour,j) = sOUT(1)%MNFLUX%CO2_gmo
             case (6)    !!SOM, !!2/7/2019: actually using TOM=POM+MOM+DOM+MB+ENZ
-                dSIM(iHour,j) = sOUT%CPOOL%TOM
+                dSIM(iHour,j) = sOUT(1)%CPOOL%TOM
             case (7)    !!MQ
-                dSIM(iHour,j) = sOUT%MNFLUX%CO2_gmo/sOUT%CPOOL%MB
+                dSIM(iHour,j) = sOUT(1)%MNFLUX%CO2_gmo/sOUT(1)%CPOOL%MB
             case (8)    !!POC
-                dSIM(iHour,j) = sOUT%CPOOL%POMT
+                dSIM(iHour,j) = sOUT(1)%CPOOL%POMT
             case (9)    !!MOC
-                dSIM(iHour,j) = sOUT%CPOOL%MOMT
+                dSIM(iHour,j) = sOUT(1)%CPOOL%MOMT
             case (10)   !!MQ
-                dSIM(iHour,j) = sOUT%MNFLUX%CO2_gmo/sOUT%CPOOL%MB
+                dSIM(iHour,j) = sOUT(1)%MNFLUX%CO2_gmo/sOUT(1)%CPOOL%MB
             case (11)    !!SOM_CN, !!2/7/2019: actually using TOM=POM+MOM+DOM+MB+ENZ
-                dSIM(iHour,j) = sOUT%CN%TOM
+                dSIM(iHour,j) = sOUT(1)%CN%TOM
             case (12)    !!MB_CN
-                dSIM(iHour,j) = sOUT%CN%MB
+                dSIM(iHour,j) = sOUT(1)%CN%MB
             case (13)    !!DOM_CN
-                dSIM(iHour,j) = sOUT%CN%DOMT
+                dSIM(iHour,j) = sOUT(1)%CN%DOMT
             case (14)    !!NH4
-                dSIM(iHour,j) = sOUT%MNPOOL%NH4tot
+                dSIM(iHour,j) = sOUT(1)%MNPOOL%NH4tot
             case (15)    !!NO3
-                dSIM(iHour,j) = sOUT%MNPOOL%NO3
+                dSIM(iHour,j) = sOUT(1)%MNPOOL%NO3
             case (16)    !!Nmine = NH4 + NO3
-                dSIM(iHour,j) = sOUT%MNPOOL%NO32
+                dSIM(iHour,j) = sOUT(1)%MNPOOL%NO32
             case (17)    !!ENZC_LIG, ENZ concentration
-                dSIM(iHour,j) = sOUT%CPOOL%ENZP(1) !/sOUT%CPOOL%MB
+                dSIM(iHour,j) = sOUT(1)%CPOOL%ENZP(1) !/sOUT%CPOOL%MB
             case (18)   !!ENZC_CEL, 
-                dSIM(iHour,j) = sOUT%CPOOL%ENZP(2)!/sOUT%CPOOL%MB
+                dSIM(iHour,j) = sOUT(1)%CPOOL%ENZP(2)!/sOUT%CPOOL%MB
             case (19)   !!ENZC_LIG, 
-                dSIM(iHour,j) = sOUT%CPOOL%ENZP(1)!/sOUT%CPOOL%MB
+                dSIM(iHour,j) = sOUT(1)%CPOOL%ENZP(1)!/sOUT%CPOOL%MB
             case (20)   !!ENZC_CEL 
-                dSIM(iHour,j) = sOUT%CPOOL%ENZP(2)!/sOUT%CPOOL%MB
+                dSIM(iHour,j) = sOUT(1)%CPOOL%ENZP(2)!/sOUT%CPOOL%MB
             case (21)   !!all mineral N excluding N-gases
-                dSIM(iHour,j) = sOUT%MNPOOL%Nmine_Solid
+                dSIM(iHour,j) = sOUT(1)%MNPOOL%Nmine_Solid
             case (22)   !!gross N mineralization
-                dSIM(iHour,j) = sOUT%MNFLUX%NFix
+                dSIM(iHour,j) = sOUT(1)%MNFLUX%NFix
             case (23)   !!net N mineralization
-                dSIM(iHour,j) = sOUT%MNFLUX%Nmn_net
+                dSIM(iHour,j) = sOUT(1)%MNFLUX%Nmn_net
             case (24)   !!plant N uptake/immobilization
-                dSIM(iHour,j) = sOUT%MNFLUX%Nim_VG
+                dSIM(iHour,j) = sOUT(1)%MNFLUX%Nim_VG
             case (25)   !!Nitrification rate
-                dSIM(iHour,j) = sOUT%MNFLUX%Nitrif
+                dSIM(iHour,j) = sOUT(1)%MNFLUX%Nitrif
             case (26)   !!Denitrification rate
-                dSIM(iHour,j) = sOUT%MNFLUX%Denit(1)
+                dSIM(iHour,j) = sOUT(1)%MNFLUX%Denit(1)
             case (27)   !!N2O efflux
-                dSIM(iHour,j) = sOUT%MNFLUX%N2O_efflux
+                dSIM(iHour,j) = sOUT(1)%MNFLUX%N2O_efflux
             case (28)   !!N2O+ NOefflux
-                dSIM(iHour,j) = sOUT%MNFLUX%N2O_efflux + sOUT%MNFLUX%NO_efflux
+                dSIM(iHour,j) = sOUT(1)%MNFLUX%N2O_efflux + sOUT(1)%MNFLUX%NO_efflux
             case default
-                dSIM(iHour,j) = sOUT%MNFLUX%CO2_gmo
+                dSIM(iHour,j) = sOUT(1)%MNFLUX%CO2_gmo
         end select
     end do
     
@@ -3789,70 +3800,70 @@ SUBROUTINE sOUT_tscale(dirout,sDate_beg,sDate_end)
     sFile_out = trim(dirout)//"VAR_day.out"
 !    nRow_skip=3; nVAR=const_nPOOL*(const_nISO+1); tstep=1; flag_avg=1
     nRow_skip=3; nVAR=const_nPOOL*3 + const_nPOOL_MN; tstep=1; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
     CALL system('gzip -f '//sFile_inp)
     
     sFile_inp = trim(dirout)//"VAR_day.out" 
     sFile_out = trim(dirout)//"VAR_mon.out"
 !    nRow_skip=3; nVAR=const_nVARc*(const_nISO+1); tstep=2; flag_avg=1
     nRow_skip=3; nVAR=const_nPOOL*3 + const_nPOOL_MN; tstep=2; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
     
     sFile_inp = trim(dirout)//"VAR_day.out"   
     sFile_out = trim(dirout)//"VAR_year.out"
     nRow_skip=3; nVAR=const_nPOOL*3 + const_nPOOL_MN; tstep=4; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
     
     print*,">>>[2] FLUXes:"
     sFile_inp = trim(dirout)//"FLX_hour.out"
     sFile_out = trim(dirout)//"FLX_day.out"
     nRow_skip=2; nVAR=const_nFLUX*2 + const_nFLUX_MN; tstep=1; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
     CALL system('gzip -f '//sFile_inp)
     
     sFile_inp = trim(dirout)//"FLX_day.out"   
     sFile_out = trim(dirout)//"FLX_mon.out"
     nRow_skip=2; nVAR=const_nFLUX*2 + const_nFLUX_MN; tstep=2; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
     
     sFile_inp = trim(dirout)//"FLX_day.out"   
     sFile_out = trim(dirout)//"FLX_year.out"
     nRow_skip=2; nVAR=const_nFLUX*2 + const_nFLUX_MN; tstep=4; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
     
     print*,">>>[3] PARAMETERs:"
     sFile_inp = trim(dirout)//"PAR_hour.out"
     sFile_out = trim(dirout)//"PAR_day.out"
     nRow_skip=2; nVAR=const_nPAR; tstep=1; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
     CALL system('gzip -f '//sFile_inp)
     
     sFile_inp = trim(dirout)//"PAR_day.out"
     sFile_out = trim(dirout)//"PAR_mon.out"
     nRow_skip=2; nVAR=const_nPAR; tstep=2; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
     
     sFile_inp = trim(dirout)//"PAR_day.out"
     sFile_out = trim(dirout)//"PAR_year.out"
     nRow_skip=2; nVAR=const_nPAR; tstep=4; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
     
     print*,">>>[4] DERIVED RATEs:"
     sFile_inp = trim(dirout)//"RATE_hour.out"
     sFile_out = trim(dirout)//"RATE_day.out"
     nRow_skip=2; nVAR=const_nRATE; tstep=1; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
     CALL system('gzip -f '//sFile_inp)
     
     sFile_inp = trim(dirout)//"RATE_day.out"
     sFile_out = trim(dirout)//"RATE_mon.out"
     nRow_skip=2; nVAR=const_nRATE; tstep=2; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
     
     sFile_inp = trim(dirout)//"RATE_day.out"
     sFile_out = trim(dirout)//"RATE_year.out"
     nRow_skip=2; nVAR=const_nRATE; tstep=4; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
     
     print*,">>>Convert OUTPUTs from Hourly to Daily-Monthly-Yearly: END"
 
@@ -3867,12 +3878,12 @@ SUBROUTINE sINP_Read(nfile,sfilename,dirinp,ststep,is_total,nMon,nHour,rINP)
     INTEGER,         intent(in)     :: is_total  !!=1: need to convert to hourly rate; =0: directly assign value
     CHARACTER(LEN=*),intent(in)     :: sfilename(nfile)
     CHARACTER(LEN=*),intent(in)     :: dirinp, ststep
-    REAL(8),         intent(inout)  :: rINP(nHour)
+    REAL(8),         intent(inout)  :: rINP(const_layerNum,nHour)
     
     !!LOCAL VARIABLES:
     INTEGER i,j,k,lp
     INTEGER ndays, nmons, iyr,imo, eof
-    REAL(8) rRead
+    REAL(8) rRead(const_layerNum)
     CHARACTER(len=50)sRead
     CHARACTER(len=200) sfilename_full
     CHARACTER(len=8) sDate_beg,sDate_end
@@ -3889,7 +3900,7 @@ SUBROUTINE sINP_Read(nfile,sfilename,dirinp,ststep,is_total,nMon,nHour,rINP)
                   k = k + 1
                   read(101,*,iostat=eof)rRead
                   if(eof<0) exit
-                  rINP(k) = rRead
+                  rINP(:,k) = rRead
               end do
               close(101)
           end do
@@ -3906,9 +3917,9 @@ SUBROUTINE sINP_Read(nfile,sfilename,dirinp,ststep,is_total,nMon,nHour,rINP)
                   do lp = 1,24 !!24 hours in 1 day
                     k = k + 1
                     if(is_total.eq.1) then
-                      rINP(k) = rRead/DBLE(24)
+                      rINP(:,k) = rRead/DBLE(24)
                     else
-                      rINP(k) = rRead
+                      rINP(:,k) = rRead
                     end if
                   end do
               end do
@@ -3926,9 +3937,9 @@ SUBROUTINE sINP_Read(nfile,sfilename,dirinp,ststep,is_total,nMon,nHour,rINP)
               do lp = 1,ndays*24
                 k = k+1
                 if(is_total.eq.1) then
-                    rINP(k) = rRead/DBLE(ndays*24)
+                    rINP(:,k) = rRead/DBLE(ndays*24)
                 else
-                    rINP(k) = rRead
+                    rINP(:,k) = rRead
                 end if
               end do
           end do   
@@ -3939,14 +3950,14 @@ END !!SUBROUTINE sINP_Read
 
 SUBROUTINE subMEND_ERROR_MSG(error_msg, xx, sPAR, sINI, sOUT)
     !!ARGUMENTS
-    TYPE(sMEND_PAR), intent(in)  :: sPAR
+    TYPE(sMEND_PAR), intent(in) :: sPAR
     TYPE(sMEND_INI), intent(in)  :: sINI
     TYPE(sMEND_OUT), intent(in)  :: sOUT
     REAL(8)        , intent(in)  :: xx(sINI%nPar) 
     CHARACTER(len=*) , intent(in):: error_msg
     
     !!LOCAL VARIABLES
-    TYPE(sMEND_INP) sINP
+    TYPE(sMEND_INP),DIMENSION(const_layerNum):: sINP
     sINP = sINI%sINP
     
     write(sINI%iFout_ini,'(/,a)')error_msg

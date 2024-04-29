@@ -19,8 +19,8 @@ USE MOD_USRFS, ONLY: Sec2HMS, nMonsbwDates
     IMPLICIT NONE
     !!--------------------------------
     TYPE(sSCE_PAR)  :: sSCE
-    TYPE(sMEND_PAR) :: sPAR
-    TYPE(sMEND_OUT) :: sOUT
+    TYPE(sMEND_PAR),DIMENSION(const_layerNum) :: sPAR
+    TYPE(sMEND_OUT),DIMENSION(const_layerNum) :: sOUT
     TYPE(sMEND_INI) :: sINI
     !!--------------------------------
        

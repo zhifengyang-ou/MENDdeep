@@ -10,7 +10,7 @@
 !! iModel = 3: Sobol Sensitivity; 
 !! iModel = 4: MCMC (Markov Chain Monte Carlo)
 !! iModel = 5: COFI (Critical Objective Function Index): output both UQpar.out & UQvar.out; 
-    iModel = 1
+    iModel = 0
     
 !!Carbon_only ("C") or Carbon-Nitrogen ("CN") 
     ssMEND = 'C'
@@ -30,7 +30,7 @@
 
 !!----------------------------------------------------------------------------------
 !!Site Name (used as prefix of output files)
-    sSite = 'U_D_N'
+    sSite = 'U_N_N'
 !!BIOME !!'ASM' = arid|semiarid|mediterranean; 'MGC'=mesic grassland & cropland; 'MDF'=Mesic Deciduous Forest; 'MCF'=MEsic Conifer Forest; used by fSWP()
     sBIOME ='MGC'
 !!SOM !!'SOD' = disturbed soil; 'SOL'=intact soil; 'LIT'=litter; used by fSWP()                 
@@ -39,12 +39,12 @@
     Altitude = 282
 !!----------------------------------------------------------------------------------    
 !!Directories for input and output
-    Dir_Input   = 'userio/inp/U_D_N/'
-    Dir_Output  = 'userio/out/U_D_Nn-2M/'
+    Dir_Input   = 'userio/inp/U_N_N/'
+    Dir_Output  = 'userio/out/U_N_Nn-2M/'
 !!----------------------------------------------------------------------------------
 !!All Input Data (Temperature|Water|Litter) starting|ending date
     ssDate_beg_all = '20090901'
-    ssDate_end_all = '20201231'
+    ssDate_end_all = '20101231'
 !!Simulation starting|ending date [CURRENTLY sDate_beg_sim >= sDate_beg_all]
     ssDate_beg_sim = '20090901'
     ssDate_end_sim = '20201231'
@@ -96,8 +96,11 @@
     Input_type1_constant = 0
     
 !!Type-1 INPUT (litter fall), Fraction to POC1, POC2, DOC pools; see [Bonan et al., GCB, 2013, 19, 957-974]
-    Fraction_type1  = 0.07, 0.37, 0.56
-
+    Fraction_type1D1  = 0.07, 0.37, 0.56
+    Fraction_type1D2  = 0.07, 0.37, 0.56
+	Fraction_type1D3  = 0.07, 0.37, 0.56
+	Fraction_type1D4  = 0.07, 0.37, 0.56
+	Fraction_type1D5  = 0.07, 0.37, 0.56
 !!Type-2 INPUT (coarse wood), [mgC/cm2/h] to POC1, POC2, DOC pools <only annual amount available>
     Input_type2     = 0.00, 0.00, 0.00
 
@@ -204,7 +207,7 @@
     Cali_varid(17:20)           =  17,                  18,                 19,                 20
     Cali_VAR(17:20)             = 'ENZC_LIG',           'ENZC_CEL',         'ENZC_LIG',         'ENZC_CEL'
     Cali_Units(17:20)           = 'mgC-cm3',            'mgC-cm3',          'mgC-cm3',          'mgC-cm3'
-    Cali_Calibrate(17:20)       =  1,                   1,                  1,                  1
+    Cali_Calibrate(17:20)       =  0,                   0,                  1,                  1
     Cali_tstep(17:20)           =  2,                   2,                  2,                  2
     Cali_obs_file(17:20)        = 'ENZC_LIG_t.obs',       'ENZC_CEL_t.obs', 'ENZC_LIG.obs',     'ENZC_CEL.obs'
     Cali_obs_file_column(17:20) =  2,                   2,                  2,                  2
@@ -243,7 +246,7 @@
 
 !!----------------------------------------------------------------------------------
 !c  INITIAL PARAMETER VALUES AND THE PARAMETER BOUNDS
-!!# of Parameters    nPar = 41
+!!# of Parameters    nPar = 48
     
     Pname(1:2)      =   'LF0', 'r0'
     Pinitial(1:2)   =   0.3,    0.01
@@ -329,15 +332,16 @@
     Phigh(39:43)    =   1e-3,       1e-2,       1e-2,    1.0,        1.0
     Pcal(39:43)     =   0,          0,          0,       0,          0
 
-    Pname(44:47)    =   'Qmax_NH4',   'Kba_NH4',    'Kp2u', 'Ku2p'
-    Pinitial(44:47) =   1e-4,          1e2,         1e-3,   1e-3
-    Plow(44:47)     =   1e-5,          1,           1e-7,   1e-5
-    Phigh(44:47)    =   1e-2,          1e4,         1e-2,   1e-2
-    Pcal(44:47)     =   0,             0,           0,      0
+    Pname(44:48)    =   'Qmax_NH4',   'Kba_NH4',    'Kp2u', 'Ku2p',  'Ygdep'
+    Pinitial(44:48) =   1e-4,          1e2,         1e-3,   1e-3,     0.5
+    Plow(44:48)     =   1e-5,          1,           1e-7,   1e-5,     0.1
+    Phigh(44:48)    =   1e-2,          1e4,         1e-2,   1e-2,     10
+    Pcal(44:48)     =   0,             0,           0,      0,        0
 
- !!                   LF0              r0             fRa            fINP              VP             KP1             fKM            PAR2            Qmax             Kba            Kdes              rE             pEP            fpEM              fD              gD              Vg           alpha              KD              Yg            Ygsl             Q10           gamma            beta           WPA2D             tau           wdorm         VNup_MB        KsNH4_MB        KsNO3_MB            VNif            VNit         VDenit1          fpENZN           KsNif           KsNit        KsDenit1        KsDenit2         VNup_VG        KsNH4_VG        KsNO3_VG          rNleach         bNup_VG        Qmax_NH4         Kba_NH4            Kp2u            Ku2p
+
+ !!                   LF0              r0             fRa            fINP              VP             KP1             fKM            PAR2            Qmax             Kba            Kdes              rE             pEP            fpEM              fD              gD              Vg           alpha              KD              Yg            Ygsl             Q10           gamma            beta           WPA2D             tau           wdorm         VNup_MB        KsNH4_MB        KsNO3_MB            VNif            VNit         VDenit1          fpENZN           KsNif           KsNit        KsDenit1        KsDenit2         VNup_VG        KsNH4_VG        KsNO3_VG          rNleach         bNup_VG        Qmax_NH4         Kba_NH4            Kp2u            Ku2p         Ygdep
  !!best:   
-    Pinitial = 		0.90000000,     0.40000000,     0.15000000,     0.60000000,    40.00000000,    65.40000000,     5.69730100,   500.00000000,     3.47058400,     7.04800000,     0.00585975,     0.00017940,     0.00119665,     1.79118889,     0.89988102,     0.71138329,     0.05327476,     0.01000248,     0.00991815,     0.20931549,     0.00100003,     2.00000000,    18.29707250,     0.04419171,     0.17362648,     0.41489984,     1.00000000,     0.00260572,     0.00100000,     0.00100000,     0.00012593,     0.10403423,     0.09548061,     9.97907547,     0.10000000,     0.01000000,     0.01000000,     0.01000000,     0.00001000,     0.01000000,     0.00500000,     0.05000000,     0.50000000,     0.00010000,   100.00000000,     0.00000500,     0.00100000,
+    Pinitial = 		0.90000000,     0.40000000,     0.15000000,     0.60000000,    40.00000000,    65.40000000,     5.69730100,   500.00000000,     3.47058400,     7.04800000,     0.00585975,     0.00017940,     0.00119665,     1.79118889,     0.89988102,     0.71138329,     0.05327476,     0.01000248,     0.00991815,     0.20931549,     0.00100003,     2.00000000,    18.29707250,     0.04419171,     0.17362648,     0.41489984,     1.00000000,     0.00260572,     0.00100000,     0.00100000,     0.00012593,     0.10403423,     0.09548061,     9.97907547,     0.10000000,     0.01000000,     0.01000000,     0.01000000,     0.00001000,     0.01000000,     0.00500000,     0.05000000,     0.50000000,     0.00010000,   100.00000000,     0.00000500,     0.00100000,    0.50000
  !					0.90000000,     0.40000000,     0.29000000,     0.52000000,    40.00000000,    65.40000000,     5.69730100,   500.00000000,     3.47058400,     7.04800000,     0.00585975,     0.00017940,     0.00119665,     1.79118889,     0.89988102,     0.71138329,     0.05327476,     0.01000248,     0.00991815,     0.20931549,     0.00100003,     2.00000000,    18.29707250,     0.04419171,     0.17362648,     0.41489984,     1.00000000,     0.00260572,     0.00100000,     0.00100000,     0.00012593,     0.10403423,     0.09548061,     9.97907547,     0.10000000,     0.01000000,     0.01000000,     0.01000000,     0.00001000,     0.01000000,     0.00500000,     0.05000000,     0.50000000,     0.00010000,   100.00000000,     0.00000500,     0.00100000,
 
 

@@ -93,7 +93,8 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
     integer             :: ifdata_type1, nfile_type1
     character(len=10)   :: sUnits_type1
     character(len=10)   :: step_type1
-    real(8)             :: Fraction_type1(3), Input_type2(3), Input_type3(3)
+    real(8)             :: Fraction_type1D1(3), Fraction_type1D2(3),Fraction_type1D3(3),Fraction_type1D4(3),Fraction_type1D5(3),&
+	                       Input_type2(3), Input_type3(3)
     character(len=8)    :: ssDate_beg_inp2, ssDate_end_inp2
     REAL(8)             :: sSIN_C12_C14, sSIN_Multiplier
     integer             :: ifdata_pH, nfile_pH
@@ -138,7 +139,8 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
                        vg_SWCres, vg_SWCsat, vg_alpha, vg_n, Ksat,Lambda,&
                        ifdata_SM, sUnits_SM, step_SM, nfile_SM, sfilename_SM, SM_constant, &
                        ifdata_type1, sUnits_type1, step_type1, nfile_type1, sfilename_type1, Input_type1_constant, &
-                       Fraction_type1, Input_type2, Input_type3, ssDate_beg_inp2, ssDate_end_inp2, &
+                       Fraction_type1D1, Fraction_type1D2,Fraction_type1D3,Fraction_type1D4,Fraction_type1D5,&
+					   Input_type2, Input_type3, ssDate_beg_inp2, ssDate_end_inp2, &
                        sSIN_C12_C14, sSIN_Multiplier, &
                        ifdata_pH, sUnits_pH, step_pH, nfile_pH, sfilename_pH, spH_constant, &
                        sSOIL_INI_file, siScenario, sSTP_delta, sSWC_logis, sSIN_logis, &
@@ -186,7 +188,7 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
                        "VNup_MB","VNup_VG","rNleach","bNup_VG","KsNH4_MB","KsNO3_MB","YgN", &
                        "Qmax_NH4","Kba_NH4","KsNH4_VG","KsNO3_VG", &
                        "fpENZN","VNif","VNit","VDenit1", "VDenit2","VDenit3","VDenit4",&
-                       "KsNif","KsNit","KsDenit1", "KsDenit2","KsDenit3","KsDenit4"/
+                       "KsNif","KsNit","KsDenit1", "KsDenit2","KsDenit3","KsDenit4","Ygdep"/
                        
     DATA Name_RATE    /"kSOM","kPOM1","kPOM2","kPOM","kMOM","kQOM","kDOM","kMBA","kMBA_in","kMBD",&
                        "kMBD_in","kMB","kMB_in","phi","Active_Fraction","CUE","NUE", &
@@ -226,7 +228,7 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
         stop
     end if
 !!--------------------------------------------------------------------------------------
-      
+    PRINT *, "test"      
     !Define sINI values
     sINI%SITE = sSite
     sINI%altitude = Altitude
@@ -253,7 +255,12 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
     sINI%sDate_beg_sim = ssDate_beg_sim
     sINI%sDate_end_sim = ssDate_end_sim
 
-    sINI%SIN_frac(1:3) = Fraction_type1
+    sINI%SIN_frac(1,1:3) = Fraction_type1D1
+	sINI%SIN_frac(2,1:3) = Fraction_type1D2
+	sINI%SIN_frac(3,1:3) = Fraction_type1D3
+	sINI%SIN_frac(4,1:3) = Fraction_type1D4
+	sINI%SIN_frac(5,1:3) = Fraction_type1D5
+	
     sINI%SIN_other(1,1:3) = Input_type2
     sINI%SIN_other(2,1:3) = Input_type3
     sINI%sDate_beg_inp2 = ssDate_beg_inp2
@@ -261,8 +268,9 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
 
     sINI%SIN_C12_C14 = sSIN_C12_C14
     sINI%SIN_Multiplier = sSIN_Multiplier
-    sINI%SIN_frac(3) = 1.d0 - sINI%SIN_frac(1) - sINI%SIN_frac(2) !!ensure total = 100%
-
+	do i=1,const_layerNum
+		sINI%SIN_frac(i,3) = 1.d0 - sINI%SIN_frac(i,1) - sINI%SIN_frac(i,2) !!ensure total = 100%
+    end do
     sINI%SOIL_INI_file = sSOIL_INI_file
     sINI%iScenario = siScenario
     sINI%STP_delta = sSTP_delta
@@ -347,7 +355,7 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
         end if
     end if
     
-    
+     PRINT *, "test"      
     
 !!==========================================================================
 
@@ -385,7 +393,7 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       sfilename_full = trim(sINI%dirout)//"MCMC.out"
       open(unit=sINI%iFout_mcmc,file=sfilename_full,status='unknown')
       !!--------------------------------------------------------------------------
-      
+     PRINT *, "test"       
       !!output files for response variables
       !!--------------------------------------------------------------------------
       sfilename_full = trim(sINI%dirout)//'SIM_obs.out'
@@ -406,33 +414,73 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       sfilename_full = trim(sINI%dirout)//"VAR_hour.out"
       open(unit = sINI%iFout_VAR_hour, file = sfilename_full, status = 'unknown')
       write(sINI%iFout_VAR_hour,*)"Simulation_Period = ",sINI%sDate_beg_sim, " -- ",sINI%sDate_end_sim
-      write(sINI%iFout_VAR_hour,'(a10,200a20)')"Hour",(trim(Name_POOL(i))//"_C",i=1,const_nPOOL), &
-                                                (trim(Name_MNPOOL(i)),i=1,const_nPOOL_MN), &
-                                                (trim(Name_POOL(i))//"_N",i=1,const_nPOOL), &
-                                                (trim(Name_POOL(i))//"_CN",i=1,const_nPOOL)
+      write(sINI%iFout_VAR_hour,'(a10,200a20)')"Hour",&
+	                                     (trim(Name_POOL(i)) // "_C", i=1,const_nPOOL),&
+										 (trim(Name_POOL(i)) // "_C", i=1,const_nPOOL),&
+										 (trim(Name_POOL(i)) // "_C", i=1,const_nPOOL),&
+										 (trim(Name_POOL(i)) // "_C", i=1,const_nPOOL),&
+										 (trim(Name_POOL(i)) // "_C", i=1,const_nPOOL),&
+                                         (trim(Name_MNPOOL(i)),i=1,const_nPOOL_MN), &
+										 (trim(Name_MNPOOL(i)),i=1,const_nPOOL_MN), &
+										 (trim(Name_MNPOOL(i)),i=1,const_nPOOL_MN), &
+										 (trim(Name_MNPOOL(i)),i=1,const_nPOOL_MN), &
+										 (trim(Name_MNPOOL(i)),i=1,const_nPOOL_MN), &
+                                         (trim(Name_POOL(i))//"_N",i=1,const_nPOOL), &
+										 (trim(Name_POOL(i))//"_N",i=1,const_nPOOL), &
+										 (trim(Name_POOL(i))//"_N",i=1,const_nPOOL), &
+										 (trim(Name_POOL(i))//"_N",i=1,const_nPOOL), &
+										 (trim(Name_POOL(i))//"_N",i=1,const_nPOOL), &
+                                         (trim(Name_POOL(i))//"_CN",i=1,const_nPOOL),&
+										 (trim(Name_POOL(i))//"_CN",i=1,const_nPOOL),&
+										 (trim(Name_POOL(i))//"_CN",i=1,const_nPOOL),&
+										 (trim(Name_POOL(i))//"_CN",i=1,const_nPOOL),&
+										 (trim(Name_POOL(i))//"_CN",i=1,const_nPOOL)
 
       sfilename_full = trim(sINI%dirout)//"FLX_hour.out"
       open(unit = sINI%iFout_FLX_hour, file = sfilename_full, status = 'unknown')
       write(sINI%iFout_FLX_hour,*)"Simulation_Period = ",sINI%sDate_beg_sim, " -- ",sINI%sDate_end_sim
       write(sINI%iFout_FLX_hour,'(a10,200a20)')"Hour",(trim(Name_FLUX(i))//"_C",i=1,const_nFLUX), &
+	                                             (trim(Name_FLUX(i))//"_C",i=1,const_nFLUX), &
+												 (trim(Name_FLUX(i))//"_C",i=1,const_nFLUX), &
+												 (trim(Name_FLUX(i))//"_C",i=1,const_nFLUX), &
+												 (trim(Name_FLUX(i))//"_C",i=1,const_nFLUX), &
                                                 (trim(Name_MNFLUX(i)),i=1,const_nFLUX_MN), &
-                                                (trim(Name_FLUX(i))//"_N",i=1,const_nFLUX)
+												(trim(Name_MNFLUX(i)),i=1,const_nFLUX_MN), &
+												(trim(Name_MNFLUX(i)),i=1,const_nFLUX_MN), &
+												(trim(Name_MNFLUX(i)),i=1,const_nFLUX_MN), &
+												(trim(Name_MNFLUX(i)),i=1,const_nFLUX_MN), &
+                                                (trim(Name_FLUX(i))//"_N",i=1,const_nFLUX), &
+												(trim(Name_FLUX(i))//"_N",i=1,const_nFLUX), &
+												(trim(Name_FLUX(i))//"_N",i=1,const_nFLUX), &
+												(trim(Name_FLUX(i))//"_N",i=1,const_nFLUX), &
+												(trim(Name_FLUX(i))//"_N",i=1,const_nFLUX)
 
       sfilename_full = trim(sINI%dirout)//"RATE_hour.out"
       open(unit = sINI%iFout_rate_hour, file = sfilename_full, status = 'unknown')
       write(sINI%iFout_RATE_hour,*)"Simulation_Period = ",sINI%sDate_beg_sim, " -- ",sINI%sDate_end_sim
-      write(sINI%iFout_RATE_hour,'(a10,100a20)')"Hour",(trim(Name_RATE(i)),i=1,const_nRATE)
+      write(sINI%iFout_RATE_hour,'(a10,100a20)')"Hour",(trim(Name_RATE(i)),i=1,const_nRATE), &
+	                                                   (trim(Name_RATE(i)),i=1,const_nRATE), &
+													   (trim(Name_RATE(i)),i=1,const_nRATE), &
+													   (trim(Name_RATE(i)),i=1,const_nRATE), &
+													   (trim(Name_RATE(i)),i=1,const_nRATE)
       
       sfilename_full = trim(sINI%dirout)//"PAR_hour.out"
       open(unit = sINI%iFout_par_hour, file = sfilename_full, status = 'unknown')
       write(sINI%iFout_PAR_hour,*)"Simulation_Period = ",sINI%sDate_beg_sim, " -- ",sINI%sDate_end_sim
-      write(sINI%iFout_PAR_hour,'(a10,100a20)')"Hour",(trim(Name_PAR(i)),i=1,const_nPAR)
+      write(sINI%iFout_PAR_hour,'(a10,100a20)')"Hour",(trim(Name_PAR(i)),i=1,const_nPAR), &
+	                                                  (trim(Name_PAR(i)),i=1,const_nPAR), &
+	                                                  (trim(Name_PAR(i)),i=1,const_nPAR), &
+	                                                (trim(Name_PAR(i)),i=1,const_nPAR), &
+	                                            (trim(Name_PAR(i)),i=1,const_nPAR)
       
       sfilename_full = trim(sINI%dirout)//trim("ITW_hour.dat")
       open(unit = sINI%iFout_ITW_hour, file = sfilename_full, status = "unknown")
       write(sINI%iFout_ITW_hour,*)"Data_Period = ",sINI%sDate_beg_all, " -- ",sINI%sDate_end_all
-      write(sINI%iFout_ITW_hour,'(a10,5a20)')"Hour","SIN_mg/cm3/h","STP_oC","SWC","SWP_MPa","pH"
-      
+      write(sINI%iFout_ITW_hour,'(a10,40a20)')"Hour","SIN_mg/cm3/h","SIN_mg/cm3/h","SIN_mg/cm3/h","SIN_mg/cm3/h","SIN_mg/cm3/h",&
+	  "STP_oC","STP_oC","STP_oC","STP_oC","STP_oC",&
+	  "SWC","SWC","SWC","SWC","SWC",&
+	  "SWP_MPa","SWP_MPa","SWP_MPa","SWP_MPa","SWP_MPa","pH","pH","pH","pH","pH"
+      PRINT *, "test"       
       !!--------------------------------------------------------------------------
       
       write(sPAR_SCE%iFout_ini,700)
@@ -443,11 +491,11 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       ndays = nDaysbwDates(sINI%sDate_beg_all,sINI%sDate_end_all)
       sINI%nHour = ndays*24
       sINI%nHour_sim = 24*nDaysbwDates(sINI%sDate_beg_sim,sINI%sDate_end_sim)
-      ALLOCATE(sINI%STP(sINI%nHour))
-      ALLOCATE(sINI%SWC(sINI%nHour))
-      ALLOCATE(sINI%SWP(sINI%nHour))
-      ALLOCATE(sINI%SpH(sINI%nHour))
-      ALLOCATE(sINI%SIN(sINI%nHour)) !!SOC input
+      ALLOCATE(sINI%STP(const_layerNum,sINI%nHour))
+      ALLOCATE(sINI%SWC(const_layerNum,sINI%nHour))
+      ALLOCATE(sINI%SWP(const_layerNum,sINI%nHour))
+      ALLOCATE(sINI%SpH(const_layerNum,sINI%nHour))
+      ALLOCATE(sINI%SIN(const_layerNum,sINI%nHour)) !!SOC input
         
       !!INPUT INFO:
       !!Soil temperature data
@@ -459,7 +507,7 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       else  !!constant temperature
           sINI%STP = ST_constant   
       end if
-      
+
       !!Soil water info: Hourly or Daily
       
       sINI % porosity = vg_SWCsat      
@@ -493,10 +541,11 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
           if (trim(sUnits).eq."percent") then  !!%, percent
             sINI%SWC = sINI%SWC/1.d2
           end if
-          
-          do k = 1, sINI%nHour
-              sINI%SWP(k) = fSWC2SWP(sINI%SWC(k),vg_SWCres,vg_SWCsat,vg_alpha,vg_n,const_SWPmin)
-          end do
+          do i=1,const_layerNum
+			  do k = 1, sINI%nHour
+				  sINI%SWP(i,k) = fSWC2SWP(sINI%SWC(i,k),vg_SWCres,vg_SWCsat,vg_alpha,vg_n,const_SWPmin)
+			  end do
+		  end do
           
       else  !!constant SM
           sINI%SWC = SM_constant 
@@ -518,7 +567,9 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       ! -------------------------------------------------------
       treatment = 'aCaN'
       call can_photosyn(gpp_m,treatment) ! modeled GPP (instead of direct input) added by zheng 
-      sINI%SIN(1:size(gpp_m)) = gpp_m 
+	  do i=1,const_layerNum
+		sINI%SIN(i,1:size(gpp_m)) = gpp_m* const_inp_ratio(i) 
+	  end do
       !!soil pH
       if(ifdata_pH.eq.1) then  !!nfile = 1 if ststep='monthly'
           sUnits = StrCompress(sUnits_pH)
@@ -562,7 +613,8 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
           do j=1,24 !!sINI%nHour
               CALL sInt2Str(j,2,str2)
               i = (k - 1)*24 + j
-              write(sINI%iFout_ITW_hour,'(A10,5f20.6)')sDate//str2,sINI%SIN(i),sINI%STP(i),sINI%SWC(i),sINI%SWP(i),sINI%SpH(i)
+              write(sINI%iFout_ITW_hour,'(A10,40f20.6)')sDate//str2,sINI%SIN(:,i),&
+			  sINI%STP(:,i),sINI%SWC(:,i),sINI%SWP(:,i),sINI%SpH(:,i) ! print all depth input--zhifeng
           end do
       end do
       close(sINI%iFout_ITW_hour)
@@ -572,16 +624,16 @@ SUBROUTINE MENDIN(sPAR_SCE,sINI)
       sFile_inp = trim(sINI%dirout)//"ITW_hour.dat"
       sFile_out = trim(sINI%dirout)//"ITW_day.dat"
 !        sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sINI%sDate_beg_all, sINI%sDate_beg_end,tstep,flag_avg)
-      CALL sOUT_ALL_tscale(sFile_inp,sFile_out,2,5, sINI%sDate_beg_all, sINI%sDate_end_all,1,1)
+      CALL sOUT_ALL_tscale(sFile_inp,sFile_out,2,25, sINI%sDate_beg_all, sINI%sDate_end_all,1,1)
       CALL system('gzip -f '//sFile_inp)
       
       sFile_inp = trim(sINI%dirout)//"ITW_day.dat"
       sFile_out = trim(sINI%dirout)//"ITW_mon.dat"
-      CALL sOUT_ALL_tscale(sFile_inp,sFile_out,2,5, sINI%sDate_beg_all, sINI%sDate_end_all,2,1)
+      CALL sOUT_ALL_tscale(sFile_inp,sFile_out,2,25, sINI%sDate_beg_all, sINI%sDate_end_all,2,1)
       
       sFile_inp = trim(sINI%dirout)//"ITW_day.dat"
       sFile_out = trim(sINI%dirout)//"ITW_year.dat"
-      CALL sOUT_ALL_tscale(sFile_inp,sFile_out,2,5, sINI%sDate_beg_all, sINI%sDate_end_all,4,1)
+      CALL sOUT_ALL_tscale(sFile_inp,sFile_out,2,25, sINI%sDate_beg_all, sINI%sDate_end_all,4,1)
       !!compute daily/monthly/yearly STP,SWP,SIN-----------------------------------------------------------END  
       
       !!Calibration Variables & Data
