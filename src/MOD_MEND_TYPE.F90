@@ -14,7 +14,7 @@ MODULE MOD_MEND_TYPE
     INTEGER, PARAMETER:: const_nPAR         = 62                    !# of parameters in sMEND_PAR
     INTEGER, PARAMETER:: const_nPAR0        = 48                    !# of parameters for calibration
     INTEGER, PARAMETER:: const_nVAR0        = 28                    !# of variables for calibration
-    INTEGER, PARAMETER:: const_nRATE        = 45                    !# of derived rates in '*_RATE_*.out', 19
+    INTEGER, PARAMETER:: const_nRATE        = 42 !45                    !# of derived rates in '*_RATE_*.out', 19
 	
 	INTEGER, PARAMETER:: const_layerNum        = 5                  !# of layers in soils----zhifeng 20240419
 	real(8), PARAMETER:: const_SOMratio(const_layerNum)=(/1d0,5d-1,3d-1,2d-1,1d-1/)        !# Initial ratio of different depth for SOM_C/POM_C/MOM_C/MBC

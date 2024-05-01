@@ -44,7 +44,7 @@
 !!----------------------------------------------------------------------------------
 !!All Input Data (Temperature|Water|Litter) starting|ending date
     ssDate_beg_all = '20090901'
-    ssDate_end_all = '20101231'
+    ssDate_end_all = '20201231'
 !!Simulation starting|ending date [CURRENTLY sDate_beg_sim >= sDate_beg_all]
     ssDate_beg_sim = '20090901'
     ssDate_end_sim = '20201231'
@@ -163,7 +163,7 @@
     Cali_varid(1:4)             =  1,                   2,                  3,                  4
     Cali_VAR(1:4)               = 'Rh',                 'Ra',               'Rs',              'MBC'
     Cali_Units(1:4)             = 'mgC-cm3-h',          'mgC-cm3-h',        'mgC-cm3-h',       'mgC-cm3'
-    Cali_Calibrate(1:4)         =  1,                   0,                  1,                  1
+    Cali_Calibrate(1:4)         =  1,                   0,                  1,                  0
     Cali_tstep(1:4)             =  1,                   1,                  1,                  4
     Cali_obs_file(1:4)          = 'Rh.obs',             'Ra.obs',           'Rs.obs',          'MBC_byDNA.obs'
     Cali_obs_file_column(1:4)   =  2,                   2,                  2,                  2
@@ -174,7 +174,7 @@
     Cali_varid(5:8)             =  5,                   6,                  7,                   8         
     Cali_VAR(5:8)               = 'CO2',                'SOC',              'MQ',              'POC'
     Cali_Units(5:8)             = 'mgC-cm3-h',          'mgC-cm3',          'h-1',              'mgC-cm3'
-    Cali_Calibrate(5:8)         =  1,                   1,                  1,                  1
+    Cali_Calibrate(5:8)         =  0,                   0,                  0,                  0
     Cali_tstep(5:8)             =  1,                   4,                  4,                  2    
     Cali_obs_file(5:8)          = 'Rh.obs',            'TC.obs',          'MQ_byDNA.obs',       'POC2020.obs'
     Cali_obs_file_column(5:8)   =  2,                   2,                  2,                  2
@@ -185,7 +185,7 @@
     Cali_varid(9:12)            =  9,                   10,                 11,                 12
     Cali_VAR(9:12)              = 'MOC',               'MQ',           'SOM_CN',            'MB_CN'
     Cali_Units(9:12)            = 'mgC-cm3',           'h-1',        'mgC-mgN',          'mgC-mgN'
-    Cali_Calibrate(9:12)        =  1,                   1,                  0,                  0
+    Cali_Calibrate(9:12)        =  0,                   0,                  0,                  0
     Cali_tstep(9:12)            =  2,                   4,                  5,                  1
     Cali_obs_file(9:12)         = 'MOC2020.obs',       'MQ_byDNA.obs',      'SOM_CN.obs',       'MB_CN.obs'
     Cali_obs_file_column(9:12)  =  2,                   2,                  2,                  2
@@ -207,7 +207,7 @@
     Cali_varid(17:20)           =  17,                  18,                 19,                 20
     Cali_VAR(17:20)             = 'ENZC_LIG',           'ENZC_CEL',         'ENZC_LIG',         'ENZC_CEL'
     Cali_Units(17:20)           = 'mgC-cm3',            'mgC-cm3',          'mgC-cm3',          'mgC-cm3'
-    Cali_Calibrate(17:20)       =  0,                   0,                  1,                  1
+    Cali_Calibrate(17:20)       =  0,                   0,                  0,                  0
     Cali_tstep(17:20)           =  2,                   2,                  2,                  2
     Cali_obs_file(17:20)        = 'ENZC_LIG_t.obs',       'ENZC_CEL_t.obs', 'ENZC_LIG.obs',     'ENZC_CEL.obs'
     Cali_obs_file_column(17:20) =  2,                   2,                  2,                  2

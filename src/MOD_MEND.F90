@@ -566,12 +566,12 @@ SUBROUTINE subMEND_output(sDate,ihr, sPAR, sINI, sOUT)
 !    if (sINI%iModel .eq. 0) then
 !    write(sINI%iFout_VAR_hour, '(A10,13e20.3,13e20.3,13e20.3)') &
 !        sDateHr, sOUT % CPOOL,sOUT % CPOOLI(1),sOUT % CPOOLI(2)
-    write(sINI%iFout_VAR_hour, '(A10,200e20.6)') sDateHr, (sOUT(i) % CPOOL, i=1,const_layerNum),&
+    write(sINI%iFout_VAR_hour, '(A10,500e20.6)') sDateHr, (sOUT(i) % CPOOL, i=1,const_layerNum),&
 	(sOUT(i)%MNPOOL,i=1,const_layerNum), (sOUT(i)%NPOOL,i=1,const_layerNum), &
 	(sOUT(i)%CN,i=1,const_layerNum) !!,sOUT % CPOOLI(1),sOUT % CPOOLI(2)    
-    write(sINI%iFout_FLX_hour, '(A10,200e20.6)') sDateHr, (sOUT(i) % CFLUX,i=1,const_layerNum),&
+    write(sINI%iFout_FLX_hour, '(A10,1000e20.6)') sDateHr, (sOUT(i) % CFLUX,i=1,const_layerNum),&
 	(sOUT(i)%MNFLUX,i=1,const_layerNum), (sOUT(i)%NFLUX,i=1,const_layerNum)
-    write(sINI%iFout_PAR_hour, '(A10,100e20.6)') sDateHr, (sPAR(i), i=1,const_layerNum)
+    write(sINI%iFout_PAR_hour, '(A10,500e20.6)') sDateHr, (sPAR(i), i=1,const_layerNum)
 !    end if
 END !!subroutine subMEND_output
 
@@ -678,11 +678,14 @@ SUBROUTINE subMEND_output_rate(sDate,ihr, sINI, sPAR, sINP, sOUT)
 		END SELECT
 	end do
 !    if (sINI%iModel .eq. 0) then
-    write(sINI%iFout_rate_hour, '(A10,100e20.3)') &
+    write(sINI%iFout_rate_hour, '(A10,500e20.3)') &
             sDateHr, kSOM,kPOM1,kPOM2,kPOM,kMOM,kQOM,kDOM,kMBa,kMBa_in,kMBd,kMBd_in,kMB,kMB_in,&
-            phi,rMBa, CUE, NUE,rNH4,sINI%fDOM,sINI%fNO3_Leaching,sINI%VNup_VG_GPPscaler,&
-            EA_POM,EA_MOM,EA_NFix,EA_Nit,EA_Denit,kNFix,kNit,kDenit, &
-            (sOUT(i)%CPOOL%TM_err,i=1,const_layerNum),sINP(i)%CPOOL%TM,(sOUT(i)%CPOOL%TM,i=1,const_layerNum),&
+            phi,rMBa, CUE, NUE,rNH4,&!,sINI%fDOM,sINI%fNO3_Leaching,sINI%VNup_VG_GPPscaler,&  remove it for simplifying code for different depth
+            (EA_POM(i,1),i=1,const_layerNum),(EA_POM(i,2),i=1,const_layerNum),&
+			EA_MOM,EA_NFix,EA_Nit, (EA_Denit(i,1),i=1,const_layerNum),(EA_Denit(i,2),i=1,const_layerNum),&
+			(EA_Denit(i,3),i=1,const_layerNum),(EA_Denit(i,4),i=1,const_layerNum),kNFix,kNit,(kDenit(i,1),i=1,const_layerNum), &
+			(kDenit(i,2),i=1,const_layerNum),(kDenit(i,3),i=1,const_layerNum),(kDenit(i,4),i=1,const_layerNum),&
+            (sOUT(i)%CPOOL%TM_err,i=1,const_layerNum),(sINP(i)%CPOOL%TM,i=1,const_layerNum),(sOUT(i)%CPOOL%TM,i=1,const_layerNum),&
 			(sOUT(i)%CFLUX%TOTinp,i=1,const_layerNum),(sOUT(i)%CFLUX%TOTout,i=1,const_layerNum),&
             (sINP(i)%tmp,i=1,const_layerNum), (sINP(i)%SWC,i=1,const_layerNum),&
 			(sINP(i)%SWP,i=1,const_layerNum), (sINP(i)%pH,i=1,const_layerNum)
@@ -3405,10 +3408,10 @@ SUBROUTINE sOUT_OPT_h(nVAR,nHour,iHour,dSIM,sPAR,sOUT,VARopt_int)
             case (1)    !!CO2, 1st obj = NSEC
                 dSIM(iHour,j) = sum([(sOUT(i)%MNFLUX%CO2_gmo,i=1,const_layerNum)])
             case (2)    !!CO2_ISO,e.g., C14_CO2
-                dSIM(iHour,j) = sum([(sOUT%MNFLUX%CO2_root,i=1,const_layerNum)])
+                dSIM(iHour,j) = sum([(sOUT(i)%MNFLUX%CO2_root,i=1,const_layerNum)])
 !                dSIM(iHour,j) = sOUT%CPOOLI(2)%CO2 - CO2_ISO_inp!!sINP%CPOOLI(2)%CO2
             case (3)    !!Rs: soil respiration
-                dSIM(iHour,j) = sum([(sOUT%MNFLUX%CO2_soil,i=1,const_layerNum)])
+                dSIM(iHour,j) = sum([(sOUT(i)%MNFLUX%CO2_soil,i=1,const_layerNum)])
             case (4)    !!MBC
                 dSIM(iHour,j) = sOUT(1)%CPOOL%MB
             case (5)    !!CO2, 2nd obj = AVGr 
@@ -3643,7 +3646,7 @@ SUBROUTINE sOUT_ALL_tscale(sFile_hour,sFile_t,nRow_skip,nVAR,sDate_beg,sDate_end
     CHARACTER(LEN=10) sDateHr
     CHARACTER(len=8) sDate
     CHARACTER(len=6) sYM
-    CHARACTER(len=3000)sRead1,sRead2
+    CHARACTER(len=20000)sRead1,sRead2
     CHARACTER(len=200)format1
     REAL(8), DIMENSION(24,nVAR)::dSIM_h1
     REAL(8), DIMENSION(31,nVAR)::dSIM_h2 !!days in 1 month, at most = 31, hours in 1 month, at most =24*31
@@ -3799,71 +3802,71 @@ SUBROUTINE sOUT_tscale(dirout,sDate_beg,sDate_end)
     sFile_inp = trim(dirout)//"VAR_hour.out"   
     sFile_out = trim(dirout)//"VAR_day.out"
 !    nRow_skip=3; nVAR=const_nPOOL*(const_nISO+1); tstep=1; flag_avg=1
-    nRow_skip=3; nVAR=const_nPOOL*3 + const_nPOOL_MN; tstep=1; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
+    nRow_skip=3; nVAR=(const_nPOOL*3 + const_nPOOL_MN)*const_layerNum; tstep=1; flag_avg=1
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
     CALL system('gzip -f '//sFile_inp)
     
     sFile_inp = trim(dirout)//"VAR_day.out" 
     sFile_out = trim(dirout)//"VAR_mon.out"
 !    nRow_skip=3; nVAR=const_nVARc*(const_nISO+1); tstep=2; flag_avg=1
-    nRow_skip=3; nVAR=const_nPOOL*3 + const_nPOOL_MN; tstep=2; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
+    nRow_skip=3; nVAR=(const_nPOOL*3 + const_nPOOL_MN)*const_layerNum; tstep=2; flag_avg=1
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
     
     sFile_inp = trim(dirout)//"VAR_day.out"   
     sFile_out = trim(dirout)//"VAR_year.out"
-    nRow_skip=3; nVAR=const_nPOOL*3 + const_nPOOL_MN; tstep=4; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
+    nRow_skip=3; nVAR=(const_nPOOL*3 + const_nPOOL_MN)*const_layerNum; tstep=4; flag_avg=1
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
     
     print*,">>>[2] FLUXes:"
     sFile_inp = trim(dirout)//"FLX_hour.out"
     sFile_out = trim(dirout)//"FLX_day.out"
-    nRow_skip=2; nVAR=const_nFLUX*2 + const_nFLUX_MN; tstep=1; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
+    nRow_skip=2; nVAR=(const_nFLUX*2 + const_nFLUX_MN)*const_layerNum; tstep=1; flag_avg=1
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
     CALL system('gzip -f '//sFile_inp)
     
     sFile_inp = trim(dirout)//"FLX_day.out"   
     sFile_out = trim(dirout)//"FLX_mon.out"
-    nRow_skip=2; nVAR=const_nFLUX*2 + const_nFLUX_MN; tstep=2; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
+    nRow_skip=2; nVAR=(const_nFLUX*2 + const_nFLUX_MN)*const_layerNum; tstep=2; flag_avg=1
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
     
     sFile_inp = trim(dirout)//"FLX_day.out"   
     sFile_out = trim(dirout)//"FLX_year.out"
-    nRow_skip=2; nVAR=const_nFLUX*2 + const_nFLUX_MN; tstep=4; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
+    nRow_skip=2; nVAR=(const_nFLUX*2 + const_nFLUX_MN)*const_layerNum; tstep=4; flag_avg=1
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
     
     print*,">>>[3] PARAMETERs:"
     sFile_inp = trim(dirout)//"PAR_hour.out"
     sFile_out = trim(dirout)//"PAR_day.out"
-    nRow_skip=2; nVAR=const_nPAR; tstep=1; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
+    nRow_skip=2; nVAR=const_nPAR*const_layerNum; tstep=1; flag_avg=1
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
     CALL system('gzip -f '//sFile_inp)
     
     sFile_inp = trim(dirout)//"PAR_day.out"
     sFile_out = trim(dirout)//"PAR_mon.out"
-    nRow_skip=2; nVAR=const_nPAR; tstep=2; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
+    nRow_skip=2; nVAR=const_nPAR*const_layerNum; tstep=2; flag_avg=1
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
     
     sFile_inp = trim(dirout)//"PAR_day.out"
     sFile_out = trim(dirout)//"PAR_year.out"
-    nRow_skip=2; nVAR=const_nPAR; tstep=4; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
+    nRow_skip=2; nVAR=const_nPAR*const_layerNum; tstep=4; flag_avg=1
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
     
     print*,">>>[4] DERIVED RATEs:"
     sFile_inp = trim(dirout)//"RATE_hour.out"
     sFile_out = trim(dirout)//"RATE_day.out"
-    nRow_skip=2; nVAR=const_nRATE; tstep=1; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
+    nRow_skip=2; nVAR=const_nRATE*const_layerNum; tstep=1; flag_avg=1
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
     CALL system('gzip -f '//sFile_inp)
     
     sFile_inp = trim(dirout)//"RATE_day.out"
     sFile_out = trim(dirout)//"RATE_mon.out"
-    nRow_skip=2; nVAR=const_nRATE; tstep=2; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
+    nRow_skip=2; nVAR=const_nRATE*const_layerNum; tstep=2; flag_avg=1
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
     
     sFile_inp = trim(dirout)//"RATE_day.out"
     sFile_out = trim(dirout)//"RATE_year.out"
-    nRow_skip=2; nVAR=const_nRATE; tstep=4; flag_avg=1
-    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR*5, sDate_beg, sDate_end,tstep,flag_avg)
+    nRow_skip=2; nVAR=const_nRATE*const_layerNum; tstep=4; flag_avg=1
+    CALL sOUT_ALL_tscale(sFile_inp,sFile_out,nRow_skip,nVAR, sDate_beg, sDate_end,tstep,flag_avg)
     
     print*,">>>Convert OUTPUTs from Hourly to Daily-Monthly-Yearly: END"
 
@@ -3887,7 +3890,7 @@ SUBROUTINE sINP_Read(nfile,sfilename,dirinp,ststep,is_total,nMon,nHour,rINP)
     CHARACTER(len=50)sRead
     CHARACTER(len=200) sfilename_full
     CHARACTER(len=8) sDate_beg,sDate_end
-    
+
     k = 0 !!hour
       if(trim(ststep).eq."hourly") then             
           do i = 1,nfile
@@ -3895,6 +3898,7 @@ SUBROUTINE sINP_Read(nfile,sfilename,dirinp,ststep,is_total,nMon,nHour,rINP)
               open(101,file=sfilename_full,status='old')
               read(101,'(a)')sDate_beg
               read(101,'(a)')sDate_end
+
               ndays = nDaysbwDates(sDate_beg,sDate_end)
               do j=1,ndays*24
                   k = k + 1
@@ -3917,7 +3921,7 @@ SUBROUTINE sINP_Read(nfile,sfilename,dirinp,ststep,is_total,nMon,nHour,rINP)
                   do lp = 1,24 !!24 hours in 1 day
                     k = k + 1
                     if(is_total.eq.1) then
-                      rINP(:,k) = rRead/DBLE(24)
+                      rINP(:,k) = rRead/DBLE(24) 
                     else
                       rINP(:,k) = rRead
                     end if
@@ -3945,7 +3949,6 @@ SUBROUTINE sINP_Read(nfile,sfilename,dirinp,ststep,is_total,nMon,nHour,rINP)
           end do   
           close(101)
       end if
-    
 END !!SUBROUTINE sINP_Read
 
 SUBROUTINE subMEND_ERROR_MSG(error_msg, xx, sPAR, sINI, sOUT)

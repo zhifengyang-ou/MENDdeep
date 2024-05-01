@@ -252,7 +252,6 @@ USE MOD_USRFS, ONLY: Sec2HMS, nMonsbwDates
 
         sINI % iModel = 0 !RUN MEND MODEL USING (i)PARAMETER VALUES IN LAST LINE OF "MEND_namelist.nml" or (ii)"BEST" PARAMETER VALUES FROM OPTIMIZATION
         fObj = fMEND_OBJ(xx, sPAR, sINI, sOUT)
-
         !!write SIM vs. OBS
         Print*,">>>Write output for SIM vs. OBS: "
         Print*,"ATTENTION: It does NOT matter if there are void rOBJ values due to NO OBS data available."

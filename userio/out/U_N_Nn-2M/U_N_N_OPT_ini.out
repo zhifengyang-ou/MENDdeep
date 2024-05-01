@@ -1,0 +1,98 @@
+          SHUFFLED COMPLEX EVOLUTION GLOBAL OPTIMIZATION
+          ==============================================
+
+ sINI%iModel =            0
+ Carbon (C) or Carbon-Nitrogen (CN) Model = C  
+ sINI%iKinetics =            0
+ sINI%iHR       =            0
+ sINI%iTmp_Func =            0
+ sINI%iENZN_Allocate =            1
+ sINI%iGPPscaler =            0
+ sINI%GPPref =   0.45000000000000001       mg C/cm2/d
+
+              SWC_Saturation, SWC_Field_Capacity =    0.2500    0.0770
+         Saturated Hydraulic Conductivity (Ksat) =   15.0000 cm/h
+   Log-Slope for Hydraulic Conductivity (Lambda) =    0.2980
+
+
+ MODEL CALIBRATION VARIABLES & DATA-FILE (see MEND_namelist.nml):
+VARid     VAR       Units     Calibrate tstep     obs_file            obs_file_column     OBJ       Weight    Tolerance 
+------------------------------------------------------------------------------------------------------------------------
+    1     Rh        mgC-cm3-h     1         1     Rh.obs                  2                NSEC     10.00      0.00
+    3     Rs        mgC-cm3-h     1         1     Rs.obs                  2                NSEC     10.00      0.00
+
+
+  SCE CONTROL     MAX TRIALS     REQUIRED IMPROVEMENT     RANDOM
+   PARAMETER        ALLOWED      PERCENT    NO. LOOPS      SEED
+  -----------     ----------     -------    ---------     ------
+   USER SPEC.       10000         0.01         10             0
+
+
+                  SCE ALGORITHM CONTROL PARAMETERS
+                  ================================
+
+  NUMBER OF     POINTS PER     POINTS IN      POINTS PER    EVOL. STEPS
+  COMPLEXES      COMPLEX      INI. POPUL.     SUB-COMPLX    PER COMPLEX
+  ---------     ----------    -----------     ----------    -----------
+      2             13             26              7             13
+
+
+               COMPLX NO.     MIN COMPLEX     INI. POINT
+               REDUCTION      NO. ALLOWED      INCLUDED
+               ----------     -----------     ----------
+                  NO               2             YES 
+
+
+        INITIAL PARAMETER VALUES AND PARAMETER BOUNDS
+        =============================================
+
+  ID  PARAMETER      OPT-Y/N  INITIAL VALUE     LOWER BOUND     UPPER BOUND
+---------------   ----------  -------------     -----------     -----------
+   1       LF0             0       0.900000        0.100000        1.000000
+   2        r0             0       0.400000        0.010000        1.000000
+   3       fRa             0       0.150000        0.100000        0.400000
+   4      fINP             1       0.600000        0.200000        0.600000
+   5        VP             0      40.000000        0.100000      100.000000
+   6       KP1             0      65.400000       10.000000      100.000000
+   7       fKM             0       5.697301        2.000000       20.000000
+   8      PAR2             0     500.000000      100.000000     1000.000000
+   9      Qmax             0       3.470584        0.500000        5.000000
+  10       Kba             0       7.048000        1.000000       16.000000
+  11      Kdes             0       0.005860        0.000100        0.010000
+  12        rE             1       0.000179        0.000100        0.010000
+  13       pEP             1       0.001197        0.001000        0.100000
+  14      fpEM             1       1.791189        0.100000        5.000000
+  15        fD             1       0.899881        0.100000        0.900000
+  16        gD             1       0.711383        0.100000        1.000000
+  17        Vg             1       0.053275        0.001000        0.100000
+  18     alpha             1       0.010002        0.010000        0.500000
+  19        KD             1       0.009918        0.000100        0.500000
+  20        Yg             1       0.209315        0.100000        0.600000
+  21      Ygsl             1       0.001000        0.001000        0.016000
+  22       Q10             0       2.000000        1.200000        2.500000
+  23     gamma             1      18.297072        0.010000       20.000000
+  24      beta             1       0.044192        0.000500        0.050000
+  25     WPA2D             1       0.173626        0.010000        0.600000
+  26       tau             1       0.414900        0.100000        0.950000
+  27     wdorm             0       1.000000        1.000000        6.000000
+  28   VNup_MB             0       0.002606        0.000100        0.100000
+  29  KsNH4_MB             0       0.001000        0.000100        0.010000
+  30  KsNO3_MB             0       0.001000        0.000100        0.010000
+  31      VNif             0       0.000126        0.000100        0.100000
+  32      VNit             0       0.104034        0.100000     1000.000000
+  33   VDenit1             0       0.095481        0.000010        1.000000
+  34    fpENZN             0       9.979075        0.100000       10.000000
+  35     KsNif             0       0.100000        0.000100        1.000000
+  36     KsNit             0       0.010000        0.000100        0.100000
+  37  KsDenit1             0       0.010000        0.000100        0.100000
+  38  KsDenit2             0       0.010000        0.000100        0.100000
+  39   VNup_VG             0       0.000010        0.000001        0.001000
+  40  KsNH4_VG             0       0.010000        0.000100        0.010000
+  41  KsNO3_VG             0       0.005000        0.000100        0.010000
+  42   rNleach             0       0.050000        0.001000        1.000000
+  43   bNup_VG             0       0.500000        0.010000        1.000000
+  44  Qmax_NH4             0       0.000100        0.000010        0.010000
+  45   Kba_NH4             0     100.000000        1.000000    10000.000000
+  46      Kp2u             0       0.000005        0.000000        0.010000
+  47      Ku2p             0       0.001000        0.000010        0.010000
+  48     Ygdep             0       0.500000        0.100000       10.000000
